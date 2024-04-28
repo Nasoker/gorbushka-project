@@ -1,0 +1,10 @@
+.idea/
+.venv/
+poetry.lock
+*.pyc
+.env
+templates/
+core/project/settings/local.py
+static/*
+!static/.gitkeep
+*.sqlite3
