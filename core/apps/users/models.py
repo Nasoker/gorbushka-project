@@ -11,10 +11,10 @@ class User(AbstractUser):
     ADMIN = 'Admin'
 
     ROLE_CHOICES = (
-        (CUSTOMER, 'Customer'),
-        (CASHIER, 'Cashier'),
-        (MODERATOR, 'Moderator'),
-        (ADMIN, 'Admin')
+        (CUSTOMER, 'Клиент'),
+        (CASHIER, 'Кассир'),
+        (MODERATOR, 'Модератор'),
+        (ADMIN, 'Администратор')
     )
 
     phone = PhoneNumberField(

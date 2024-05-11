@@ -1,6 +1,9 @@
 from django.db import models
+
 from core.apps.common.models import TimeStampedModel
 from core.apps.users.models import User
+
+from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
 
 
 class TransactionType(TimeStampedModel):
@@ -53,12 +56,27 @@ class Transaction(TimeStampedModel):
         verbose_name='Сумма операции',
     )
 
+    # TODO: how to store pdf files in django ????
+
     comment = models.TextField(
-        max_length=2000,
+        max_length=2000,  # TODO: 50 is okay?
         blank=True,
         null=True,
         verbose_name='Примечание',
     )
+
+    def to_entity(self) -> TransactionEntity:
+        return TransactionEntity(
+            id=self.pk,
+            transaction_type=self.transaction_type.type,
+            client_id=self.client.pk if self.client else None,
+            client_username=self.client.username if self.client else None,
+            provider=self.provider,
+            amount=self.amount,
+            comment=self.comment,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
 
     class Meta:
         verbose_name = 'Транзакция'
