@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from pydantic import BaseModel
 
 from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
@@ -29,6 +28,3 @@ class TransactionSchema(BaseModel):
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
-
-# TODO: remove
-TransactionListSchema = list[TransactionSchema]
