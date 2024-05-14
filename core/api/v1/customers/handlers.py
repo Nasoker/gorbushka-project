@@ -32,6 +32,7 @@ def get_customer_handler(
         request: HttpRequest,
         customer_id: int
 ) -> ApiResponse[CustomerSchema]:
+    # TODO: do we really need this code ???
     if (customer_id is None or customer_id == '') and request.user is None:
         return ApiResponse(errors=['Customer Id should not be empty'])
 

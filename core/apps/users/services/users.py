@@ -34,8 +34,9 @@ class ORMCustomersService(BaseCustomersService):
         query = self._build_customers_query(filters)
         return UserModel.objects.filter(query).count()
 
-    def get_customer(self, customer_id: int) -> User:
-        qs = UserModel.objects.filter(Q(pk=customer_id) & Q(role='Customer'))
+    def get_customer(self, customer_id: int) -> User | None:
+        # TODO: changed to  ||| & Q(role='Customer') ||| or smth
+        qs = UserModel.objects.filter(Q(pk=customer_id))
 
         users = [user.to_entity() for user in qs]
 
