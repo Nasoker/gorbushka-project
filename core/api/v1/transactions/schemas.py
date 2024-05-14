@@ -9,6 +9,7 @@ class TransactionSchema(BaseModel):
     transaction_type: str
     client_id: int | None
     client_username: str | None
+    client_balance: float | None
     provider: str | None
     amount: float
     comment: str | None
@@ -22,6 +23,7 @@ class TransactionSchema(BaseModel):
             transaction_type=entity.transaction_type,
             client_id=entity.client_id,
             client_username=entity.client_username,
+            client_balance=entity.client_balance,
             provider=entity.provider,
             amount=entity.amount,
             comment=entity.comment,

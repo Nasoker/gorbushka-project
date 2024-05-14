@@ -22,7 +22,10 @@ class BaseTransactionsService(ABC):
 class ORMTransactionsService(BaseTransactionsService):
     def get_transactions(self, filters: TransactionFilters, pagination: PaginationIn) -> Iterable[Transaction]:
         query = self._build_transactions_query(filters)
-        qs = TransactionModel.objects.filter(query)[pagination.offset:pagination.offset + pagination.limit]
+        qs = TransactionModel \
+                 .objects \
+                 .filter(query) \
+                 .order_by('-created_at')[pagination.offset:pagination.offset + pagination.limit]
 
         return [transaction.to_entity() for transaction in qs]
 

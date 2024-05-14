@@ -18,6 +18,7 @@ class TransactionAdmin(admin.ModelAdmin):
         'id',
         'transaction_type',
         'client',
+        'client_balance',
         'provider',
         'amount',
         'comment',

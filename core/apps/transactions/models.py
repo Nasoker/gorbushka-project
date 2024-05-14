@@ -41,6 +41,15 @@ class Transaction(TimeStampedModel):
         limit_choices_to={'role': 'Customer'},
     )
 
+    client_balance = models.DecimalField(
+        max_digits=10,
+        decimal_places=3,
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name='Баланс',
+    )
+
     provider = models.CharField(
         max_length=255,
         blank=True,
@@ -65,12 +74,24 @@ class Transaction(TimeStampedModel):
         verbose_name='Примечание',
     )
 
+    def save(self, *args, **kwargs):
+        if self.client is not None:
+            last_client_transactions = Transaction.objects.filter(client=self.client).order_by('-created_at')[:1]
+
+            if last_client_transactions:
+                self.client_balance = last_client_transactions[0].client_balance + self.amount
+            else:
+                self.client_balance = self.amount
+
+        super(Transaction, self).save(*args, **kwargs)
+
     def to_entity(self) -> TransactionEntity:
         return TransactionEntity(
             id=self.pk,
             transaction_type=self.transaction_type.type,
             client_id=self.client.pk if self.client else None,
             client_username=self.client.username if self.client else None,
+            client_balance=self.client_balance,
             provider=self.provider,
             amount=self.amount,
             comment=self.comment,

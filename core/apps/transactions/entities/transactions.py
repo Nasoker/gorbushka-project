@@ -8,6 +8,7 @@ class Transaction:
     transaction_type: str
     client_id: int
     client_username: str
+    client_balance: float | None
     provider: str
     amount: float
     comment: str
