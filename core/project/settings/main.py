@@ -20,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / '.env')
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -31,7 +30,6 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -48,12 +46,14 @@ INSTALLED_APPS = [
     # 3rd party
     'phonenumber_field',
     'phonenumbers',
-    'ninja_extra'
+    'ninja_extra',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -81,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.project.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -95,7 +94,6 @@ DATABASES = {
         'PORT': env('POSTGRES_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -115,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -126,7 +123,6 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
