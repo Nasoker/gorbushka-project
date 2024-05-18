@@ -41,6 +41,15 @@ class User(AbstractUser):
         verbose_name='Роль'
     )
 
+    balance = models.DecimalField(
+        max_digits=10,
+        decimal_places=3,
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name='Баланс',
+    )
+
     def __str__(self):
         if not self.last_name:
             return f'{self.first_name} ({self.email})'
@@ -71,7 +80,8 @@ class User(AbstractUser):
             email=self.email,
             phone=str(self.phone),
             telegram=self.telegram,
-            role=self.role
+            role=self.role,
+            balance=self.balance
         )
 
     class Meta:

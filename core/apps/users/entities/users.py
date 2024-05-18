@@ -10,3 +10,4 @@ class User:
     phone: str
     telegram: str
     role: str
+    balance: float

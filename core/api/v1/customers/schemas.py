@@ -11,6 +11,7 @@ class CustomerSchema(BaseModel):
     phone: str
     telegram: str | None
     role: str
+    balance: float
 
     @staticmethod
     def from_entity(entity: UserEntity) -> 'CustomerSchema':
@@ -21,5 +22,6 @@ class CustomerSchema(BaseModel):
             email=entity.email,
             phone=entity.phone,
             telegram=entity.telegram,
-            role=entity.role
+            role=entity.role,
+            balance=entity.balance
         )

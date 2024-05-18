@@ -1,9 +1,13 @@
+import decimal
+from datetime import datetime
+
 from django.db import models
 
 from core.apps.common.models import TimeStampedModel
 from core.apps.users.models import User
 
 from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
+from core.apps.transactions.entities.transactions import TransactionType as TransactionTypeEntity
 
 
 class TransactionType(TimeStampedModel):
@@ -17,6 +21,14 @@ class TransactionType(TimeStampedModel):
 
     def __str__(self):
         return self.type
+
+    def to_entity(self) -> TransactionTypeEntity:
+        return TransactionTypeEntity(
+            id=self.pk,
+            type=self.type,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
 
     class Meta:
         verbose_name = 'Тип транзакции'
@@ -68,7 +80,7 @@ class Transaction(TimeStampedModel):
     # TODO: how to store pdf files in django ????
 
     comment = models.TextField(
-        max_length=2000,  # TODO: 50 is okay?
+        max_length=2000,
         blank=True,
         null=True,
         verbose_name='Примечание',
@@ -83,12 +95,17 @@ class Transaction(TimeStampedModel):
             else:
                 self.client_balance = self.amount
 
+            User.objects.filter(id=self.client.id).update(
+                balance=self.client_balance,
+            )
+
         super(Transaction, self).save(*args, **kwargs)
 
     def to_entity(self) -> TransactionEntity:
         return TransactionEntity(
             id=self.pk,
             transaction_type=self.transaction_type.type,
+            transaction_type_id=self.transaction_type.pk,
             client_id=self.client.pk if self.client else None,
             client_username=self.client.username if self.client else None,
             client_balance=self.client_balance,
@@ -97,6 +114,17 @@ class Transaction(TimeStampedModel):
             comment=self.comment,
             created_at=self.created_at,
             updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_entity(cls, entity: TransactionEntity) -> 'Transaction':
+        return cls(
+            pk=entity.id,
+            transaction_type=TransactionType.objects.filter(pk=entity.transaction_type_id)[0],
+            client=User.objects.filter(id=entity.client_id)[0],
+            provider=entity.provider,
+            amount=decimal.Decimal(entity.amount),
+            comment=entity.comment
         )
 
     class Meta:

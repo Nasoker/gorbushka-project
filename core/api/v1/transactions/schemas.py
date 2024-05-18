@@ -4,7 +4,31 @@ from pydantic import BaseModel
 from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
 
 
-class TransactionSchema(BaseModel):
+class TransactionInSchema(BaseModel):
+    id: int | None = None
+    transaction_type: str
+    client_id: int | None = None
+    provider: str | None = None
+    amount: float
+    comment: str | None = None
+
+    def to_entity(self):
+        return TransactionEntity(
+            id=self.id,
+            transaction_type=self.transaction_type,
+            client_id=self.client_id,
+            provider=self.provider,
+            amount=self.amount,
+            comment=self.comment,
+            transaction_type_id=None,
+            client_balance=None,
+            client_username=None,
+            created_at=None,
+            updated_at=None
+        )
+
+
+class TransactionOutSchema(BaseModel):
     id: int
     transaction_type: str
     client_id: int | None
@@ -17,8 +41,8 @@ class TransactionSchema(BaseModel):
     updated_at: datetime
 
     @staticmethod
-    def from_entity(entity: TransactionEntity) -> 'TransactionSchema':
-        return TransactionSchema(
+    def from_entity(entity: TransactionEntity) -> 'TransactionOutSchema':
+        return TransactionOutSchema(
             id=entity.id,
             transaction_type=entity.transaction_type,
             client_id=entity.client_id,
