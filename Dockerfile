@@ -1,4 +1,4 @@
-FROM python:3.12.1-alpine
+FROM --platform=linux/amd64 python:3.12.1-alpine
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
