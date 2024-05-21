@@ -1,11 +1,24 @@
-from django.http import HttpRequest, HttpResponse
-from ninja import Router, Query
+from django.http import HttpRequest
+from ninja import (
+    Query,
+    Router,
+)
 
-from core.api.filters import PaginationIn, PaginationOut
-from core.api.schemas import ApiResponse, ListPaginatedResponse
+from core.api.filters import (
+    PaginationIn,
+    PaginationOut,
+)
+from core.api.schemas import (
+    ApiResponse,
+    ListPaginatedResponse,
+)
 from core.api.v1.customers.filters import CustomerFilters
 from core.api.v1.customers.schemas import CustomerSchema
-from core.apps.users.services.users import BaseCustomersService, ORMCustomersService
+from core.apps.users.services.users import (
+    BaseCustomersService,
+    ORMCustomersService,
+)
+
 
 router = Router(tags=['Customers'])
 
@@ -14,7 +27,7 @@ router = Router(tags=['Customers'])
 def get_customers_handler(
         request: HttpRequest,
         filters: Query[CustomerFilters],
-        pagination_in: Query[PaginationIn]
+        pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginatedResponse[CustomerSchema]]:
     service: BaseCustomersService = ORMCustomersService()
 
@@ -30,7 +43,7 @@ def get_customers_handler(
 @router.get('', response=ApiResponse[CustomerSchema])
 def get_customer_handler(
         request: HttpRequest,
-        customer_id: int
+        customer_id: int,
 ) -> ApiResponse[CustomerSchema]:
     # TODO: do we really need this code ???
     if (customer_id is None or customer_id == '') and request.user is None:

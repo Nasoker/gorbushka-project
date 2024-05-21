@@ -1,13 +1,13 @@
 import decimal
-from datetime import datetime
 
 from django.db import models
 
 from core.apps.common.models import TimeStampedModel
+from core.apps.transactions.entities.transactions import (
+    Transaction as TransactionEntity,
+    TransactionType as TransactionTypeEntity,
+)
 from core.apps.users.models import User
-
-from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
-from core.apps.transactions.entities.transactions import TransactionType as TransactionTypeEntity
 
 
 class TransactionType(TimeStampedModel):
@@ -99,7 +99,7 @@ class Transaction(TimeStampedModel):
                 balance=self.client_balance,
             )
 
-        super(Transaction, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def to_entity(self) -> TransactionEntity:
         return TransactionEntity(
@@ -124,7 +124,7 @@ class Transaction(TimeStampedModel):
             client=User.objects.filter(id=entity.client_id)[0],
             provider=entity.provider,
             amount=decimal.Decimal(entity.amount),
-            comment=entity.comment
+            comment=entity.comment,
         )
 
     class Meta:

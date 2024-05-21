@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 # TODO: Move HTML to static files
 
 #

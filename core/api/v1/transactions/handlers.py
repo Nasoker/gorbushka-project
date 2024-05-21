@@ -1,11 +1,27 @@
 from django.http import HttpRequest
-from ninja import Router, Query
+from ninja import (
+    Query,
+    Router,
+)
 
-from core.api.filters import PaginationIn, PaginationOut
-from core.api.schemas import ApiResponse, ListPaginatedResponse
+from core.api.filters import (
+    PaginationIn,
+    PaginationOut,
+)
+from core.api.schemas import (
+    ApiResponse,
+    ListPaginatedResponse,
+)
 from core.api.v1.transactions.filters import TransactionFilters
-from core.api.v1.transactions.schemas import TransactionInSchema, TransactionOutSchema
-from core.apps.transactions.services.transactions import BaseTransactionsService, ORMTransactionsService
+from core.api.v1.transactions.schemas import (
+    TransactionInSchema,
+    TransactionOutSchema,
+)
+from core.apps.transactions.services.transactions import (
+    BaseTransactionsService,
+    ORMTransactionsService,
+)
+
 
 router = Router(tags=['Transactions'])
 
@@ -34,7 +50,7 @@ def get_transactions_handler(
 @router.post('/upsert', response=ApiResponse[TransactionOutSchema])
 def create_transaction_handler(
         request: HttpRequest,
-        transaction_in: TransactionInSchema
+        transaction_in: TransactionInSchema,
 ) -> ApiResponse[TransactionOutSchema]:
     service: BaseTransactionsService = ORMTransactionsService()
 

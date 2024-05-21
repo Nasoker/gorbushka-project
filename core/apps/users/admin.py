@@ -18,10 +18,12 @@ class UserAdmin(UserAdmin):
 
     add_fieldsets = (
         ('Личные данные', {'fields': ('email', 'first_name', 'last_name', 'phone', 'telegram')}),
-        ('Аутентификация', {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2')
-        }),
+        (
+            'Аутентификация', {
+                'classes': ('wide',),
+                'fields': ('username', 'password1', 'password2'),
+            },
+        ),
         ('Права пользователя', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
     )
 
@@ -32,7 +34,7 @@ class UserAdmin(UserAdmin):
         'last_name',
         'phone',
         'telegram',
-        'role'
+        'role',
     )
 
     list_display_links = ('username',)

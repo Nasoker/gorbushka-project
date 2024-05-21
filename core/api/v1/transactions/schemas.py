@@ -1,11 +1,12 @@
 from datetime import datetime
+
 from pydantic import BaseModel
 
 from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
 
 
 class TransactionInSchema(BaseModel):
-    id: int | None = None
+    id: int | None = None  # noqa
     transaction_type: str
     client_id: int | None = None
     provider: str | None = None
@@ -24,7 +25,7 @@ class TransactionInSchema(BaseModel):
             client_balance=None,
             client_username=None,
             created_at=None,
-            updated_at=None
+            updated_at=None,
         )
 
 

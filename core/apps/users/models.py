@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db import models
+
 from phonenumber_field.modelfields import PhoneNumberField
 
 from core.apps.users.entities.users import User as UserEntity
@@ -16,7 +17,7 @@ class User(AbstractUser):
         (CUSTOMER, 'Клиент'),
         (CASHIER, 'Кассир'),
         (MODERATOR, 'Модератор'),
-        (ADMIN, 'Администратор')
+        (ADMIN, 'Администратор'),
     )
 
     phone = PhoneNumberField(
@@ -31,14 +32,14 @@ class User(AbstractUser):
         blank=True,
         unique=True,
         validators=[UnicodeUsernameValidator()],
-        verbose_name='Телеграм'
+        verbose_name='Телеграм',
     )
 
     role = models.CharField(
         max_length=50,
         choices=ROLE_CHOICES,
         default=CUSTOMER,
-        verbose_name='Роль'
+        verbose_name='Роль',
     )
 
     balance = models.DecimalField(
@@ -81,7 +82,7 @@ class User(AbstractUser):
             phone=str(self.phone),
             telegram=self.telegram,
             role=self.role,
-            balance=self.balance
+            balance=self.balance,
         )
 
     class Meta:

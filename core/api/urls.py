@@ -1,12 +1,12 @@
-from ninja_extra import NinjaExtraAPI
-from ninja_jwt.controller import NinjaJWTDefaultController
-
-from ninja_jwt.authentication import JWTAuth
-
 from django.urls import path
 
-from core.api.v1.transactions.handlers import router as transactions_router
+from ninja_extra import NinjaExtraAPI
+from ninja_jwt.authentication import JWTAuth
+from ninja_jwt.controller import NinjaJWTDefaultController
+
 from core.api.v1.customers.handlers import router as customers_router
+from core.api.v1.transactions.handlers import router as transactions_router
+
 
 api = NinjaExtraAPI()
 api.register_controllers(NinjaJWTDefaultController)

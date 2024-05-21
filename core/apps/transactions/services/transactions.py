@@ -1,16 +1,26 @@
 import decimal
-from abc import ABC, abstractmethod
+from abc import (
+    ABC,
+    abstractmethod,
+)
 from datetime import datetime
 from typing import Iterable
 
-from django.db.models import Q, F
+from django.db.models import (
+    F,
+    Q,
+)
 
 from core.api.filters import PaginationIn
 from core.api.v1.transactions.filters import TransactionFilters
-from core.apps.transactions.entities.transactions import Transaction as Transaction
-from core.apps.transactions.entities.transactions import TransactionType as TransactionType
-from core.apps.transactions.models import Transaction as TransactionModel
-from core.apps.transactions.models import TransactionType as TransactionTypeModel
+from core.apps.transactions.entities.transactions import (
+    Transaction as Transaction,
+    TransactionType as TransactionType,
+)
+from core.apps.transactions.models import (
+    Transaction as TransactionModel,
+    TransactionType as TransactionTypeModel,
+)
 
 
 class BaseTransactionsService(ABC):
@@ -52,7 +62,7 @@ class ORMTransactionsService(BaseTransactionsService):
                 amount=transaction.amount,
                 client_balance=F('client_balance') + (decimal.Decimal(transaction.amount) - F('amount')),
                 comment=transaction.comment,
-                provider=transaction.provider
+                provider=transaction.provider,
             )
 
             if updated_rows_amount == 0:

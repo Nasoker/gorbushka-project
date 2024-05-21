@@ -23,5 +23,5 @@ class CustomerSchema(BaseModel):
             phone=entity.phone,
             telegram=entity.telegram,
             role=entity.role,
-            balance=entity.balance
+            balance=entity.balance,
         )
