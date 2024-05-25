@@ -7,9 +7,9 @@ class Transaction:
     id: int | None
     transaction_type: str
     transaction_type_id: int | None
-    client_id: int | None
-    client_username: str | None
-    client_balance: float | None
+    customer_id: int | None
+    customer_username: str | None
+    customer_balance: float | None
     provider: str | None
     amount: float
     comment: str | None

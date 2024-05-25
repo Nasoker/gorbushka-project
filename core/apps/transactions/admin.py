@@ -21,8 +21,8 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'transaction_type',
-        'client',
-        'client_balance',
+        'customer',
+        'customer_balance',
         'provider',
         'amount',
         'comment',

@@ -60,7 +60,7 @@ class ORMTransactionsService(BaseTransactionsService):
             updated_rows_amount = TransactionModel.objects.filter(Q(pk=transaction.id)).update(
                 updated_at=datetime.now(),
                 amount=transaction.amount,
-                client_balance=F('client_balance') + (decimal.Decimal(transaction.amount) - F('amount')),
+                customer_balance=F('customer_balance') + (decimal.Decimal(transaction.amount) - F('amount')),
                 comment=transaction.comment,
                 provider=transaction.provider,
             )
@@ -95,7 +95,7 @@ class ORMTransactionsService(BaseTransactionsService):
     def _build_transactions_query(self, filters: TransactionFilters) -> Q:
         query = Q()
 
-        if filters.client_id is not None:
-            query &= Q(client_id=filters.client_id)
+        if filters.customer_id is not None:
+            query &= Q(customer_id=filters.customer_id)
 
         return query

@@ -44,7 +44,7 @@ class Transaction(TimeStampedModel):
         verbose_name='Тип транзакции',
     )
 
-    client = models.ForeignKey(
+    customer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         blank=True,
@@ -53,7 +53,7 @@ class Transaction(TimeStampedModel):
         limit_choices_to={'role': 'Customer'},
     )
 
-    client_balance = models.DecimalField(
+    customer_balance = models.DecimalField(
         max_digits=10,
         decimal_places=3,
         default=0,
@@ -87,16 +87,16 @@ class Transaction(TimeStampedModel):
     )
 
     def save(self, *args, **kwargs):
-        if self.client is not None:
-            last_client_transactions = Transaction.objects.filter(client=self.client).order_by('-created_at')[:1]
+        if self.customer is not None:
+            last_customer_transactions = Transaction.objects.filter(customer=self.customer).order_by('-created_at')[:1]
 
-            if last_client_transactions:
-                self.client_balance = last_client_transactions[0].client_balance + self.amount
+            if last_customer_transactions:
+                self.customer_balance = last_customer_transactions[0].customer_balance + self.amount
             else:
-                self.client_balance = self.amount
+                self.customer_balance = self.amount
 
-            User.objects.filter(id=self.client.id).update(
-                balance=self.client_balance,
+            User.objects.filter(id=self.customer.id).update(
+                balance=self.customer_balance,
             )
 
         super().save(*args, **kwargs)
@@ -106,9 +106,9 @@ class Transaction(TimeStampedModel):
             id=self.pk,
             transaction_type=self.transaction_type.type,
             transaction_type_id=self.transaction_type.pk,
-            client_id=self.client.pk if self.client else None,
-            client_username=self.client.username if self.client else None,
-            client_balance=self.client_balance,
+            customer_id=self.customer.pk if self.customer else None,
+            customer_username=self.customer.username if self.customer else None,
+            customer_balance=self.customer_balance,
             provider=self.provider,
             amount=self.amount,
             comment=self.comment,
@@ -121,7 +121,7 @@ class Transaction(TimeStampedModel):
         return cls(
             pk=entity.id,
             transaction_type=TransactionType.objects.filter(pk=entity.transaction_type_id)[0],
-            client=User.objects.filter(id=entity.client_id)[0],
+            customer=User.objects.filter(id=entity.customer_id)[0],
             provider=entity.provider,
             amount=decimal.Decimal(entity.amount),
             comment=entity.comment,

@@ -8,7 +8,7 @@ from core.apps.transactions.entities.transactions import Transaction as Transact
 class TransactionInSchema(BaseModel):
     id: int | None = None  # noqa
     transaction_type: str
-    client_id: int | None = None
+    customer_id: int | None = None
     provider: str | None = None
     amount: float
     comment: str | None = None
@@ -17,13 +17,13 @@ class TransactionInSchema(BaseModel):
         return TransactionEntity(
             id=self.id,
             transaction_type=self.transaction_type,
-            client_id=self.client_id,
+            customer_id=self.customer_id,
             provider=self.provider,
             amount=self.amount,
             comment=self.comment,
             transaction_type_id=None,
-            client_balance=None,
-            client_username=None,
+            customer_balance=None,
+            customer_username=None,
             created_at=None,
             updated_at=None,
         )
@@ -32,9 +32,9 @@ class TransactionInSchema(BaseModel):
 class TransactionOutSchema(BaseModel):
     id: int
     transaction_type: str
-    client_id: int | None
-    client_username: str | None
-    client_balance: float | None
+    customer_id: int | None
+    customer_username: str | None
+    customer_balance: float | None
     provider: str | None
     amount: float
     comment: str | None
@@ -46,9 +46,9 @@ class TransactionOutSchema(BaseModel):
         return TransactionOutSchema(
             id=entity.id,
             transaction_type=entity.transaction_type,
-            client_id=entity.client_id,
-            client_username=entity.client_username,
-            client_balance=entity.client_balance,
+            customer_id=entity.customer_id,
+            customer_username=entity.customer_username,
+            customer_balance=entity.customer_balance,
             provider=entity.provider,
             amount=entity.amount,
             comment=entity.comment,
