@@ -47,7 +47,7 @@ def get_transactions_handler(
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 
 
-@router.post('/upsert', response=ApiResponse[TransactionOutSchema])
+@router.post('upsert', response=ApiResponse[TransactionOutSchema])
 def create_transaction_handler(
         request: HttpRequest,
         transaction_in: TransactionInSchema,
