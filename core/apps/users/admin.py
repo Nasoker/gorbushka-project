@@ -28,6 +28,7 @@ class UserAdmin(UserAdmin):
     )
 
     list_display = (
+        'id',
         'username',
         'email',
         'first_name',
