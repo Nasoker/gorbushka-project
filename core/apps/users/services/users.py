@@ -13,10 +13,11 @@ from django.db.models.functions import Concat
 from core.api.filters import PaginationIn
 from core.api.v1.users.filters import UserFilters
 from core.apps.users.entities.users import User
+from core.apps.users.exceptions.exceptions import UserNotFoundError
 from core.apps.users.models import User as UserModel
 
 
-class BaseUserService(ABC):
+class BaseUsersService(ABC):
     @abstractmethod
     def get_users(self, filters: UserFilters, pagination: PaginationIn) -> Iterable[User]:
         ...
@@ -30,7 +31,7 @@ class BaseUserService(ABC):
         ...
 
 
-class ORMUserService(BaseUserService):
+class ORMUsersService(BaseUsersService):
     def get_users(self, filters: UserFilters, pagination: PaginationIn) -> Iterable[User]:
         query = self._build_users_query(filters)
         qs = UserModel \
@@ -53,10 +54,10 @@ class ORMUserService(BaseUserService):
 
         users = [user.to_entity() for user in qs]
 
-        if users:
-            return users[0]
+        if not users:
+            raise UserNotFoundError()
 
-        return None
+        return users[0]
 
     def _build_users_query(self, filters: UserFilters) -> Q:
         query = Q()

@@ -27,3 +27,8 @@ class UserOutSchema(BaseModel):
             role=entity.role,
             balance=entity.balance,
         )
+
+
+class UserBalanceOutSchema(BaseModel):
+    id: int
+    balance: float
