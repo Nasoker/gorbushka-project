@@ -9,6 +9,7 @@ from typing import Iterable
 from django.db.models import (
     F,
     Q,
+    Sum,
 )
 
 from core.api.filters import PaginationIn
@@ -38,6 +39,18 @@ class BaseTransactionsService(ABC):
 
     @abstractmethod
     def get_transaction_type(self, transaction_type: str) -> TransactionType | None:
+        ...
+
+    @abstractmethod
+    def get_user_balance(self, user_id: int) -> float:
+        ...
+
+    @abstractmethod
+    def get_transaction_types(self, pagination: PaginationIn) -> Iterable[TransactionType]:
+        ...
+
+    @abstractmethod
+    def get_transaction_types_count(self) -> int:
         ...
 
 
@@ -91,6 +104,21 @@ class ORMTransactionsService(BaseTransactionsService):
             return transaction_types[0]
 
         return None
+
+    def get_user_balance(self, user_id: int) -> float:
+        balance_data = TransactionModel.objects.filter(Q(customer__pk=user_id)).aggregate(Sum('amount'))
+
+        if balance_data['amount__sum']:
+            return balance_data['amount__sum']
+        else:
+            return 0
+
+    def get_transaction_types(self, pagination: PaginationIn) -> Iterable[TransactionType]:
+        qs = TransactionTypeModel.objects.all()[pagination.offset:pagination.offset + pagination.limit]
+        return [transaction_type.to_entity() for transaction_type in qs]
+
+    def get_transaction_types_count(self) -> int:
+        return TransactionTypeModel.objects.all().count()
 
     def _build_transactions_query(self, filters: TransactionFilters) -> Q:
         query = Q()

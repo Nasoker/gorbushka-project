@@ -2,7 +2,10 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from core.apps.transactions.entities.transactions import Transaction as TransactionEntity
+from core.apps.transactions.entities.transactions import (
+    Transaction as TransactionEntity,
+    TransactionType as TransactionTypeEntity,
+)
 
 
 class TransactionInSchema(BaseModel):
@@ -54,4 +57,16 @@ class TransactionOutSchema(BaseModel):
             comment=entity.comment,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
+        )
+
+
+class TransactionTypeOutSchema(BaseModel):
+    id: int
+    type: str
+
+    @staticmethod
+    def from_entity(entity: TransactionTypeEntity) -> 'TransactionTypeOutSchema':
+        return TransactionTypeOutSchema(
+            id=entity.id,
+            type=entity.type,
         )

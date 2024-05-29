@@ -16,6 +16,7 @@ from core.api.v1.transactions.filters import TransactionFilters
 from core.api.v1.transactions.schemas import (
     TransactionInSchema,
     TransactionOutSchema,
+    TransactionTypeOutSchema,
 )
 from core.apps.transactions.services.transactions import (
     BaseTransactionsService,
@@ -32,10 +33,6 @@ def get_transactions_handler(
         filters: Query[TransactionFilters],
         pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginatedResponse[TransactionOutSchema]]:
-    # if request.user.role not in ('Cashier', 'Moderator', 'Admin'):
-    #     # TODO: throw unauthorized exception
-    #     print(request.user.role)
-
     service: BaseTransactionsService = ORMTransactionsService()
 
     transactions = service.get_transactions(filters=filters, pagination=pagination_in)
@@ -43,6 +40,26 @@ def get_transactions_handler(
 
     items = [TransactionOutSchema.from_entity(obj) for obj in transactions]
     pagination_out = PaginationOut(offset=pagination_in.offset, limit=pagination_in.limit, total=transactions_count)
+
+    return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
+
+
+@router.get('/transaction_types', response=ApiResponse[ListPaginatedResponse[TransactionTypeOutSchema]])
+def get_transaction_types_handler(
+        request: HttpRequest,
+        pagination_in: Query[PaginationIn],
+) -> ApiResponse[ListPaginatedResponse[TransactionTypeOutSchema]]:
+    service: BaseTransactionsService = ORMTransactionsService()
+
+    transaction_types = service.get_transaction_types(pagination=pagination_in)
+    transaction_types_count = service.get_transaction_types_count()
+
+    items = [TransactionTypeOutSchema.from_entity(obj) for obj in transaction_types]
+    pagination_out = PaginationOut(
+        offset=pagination_in.offset,
+        limit=pagination_in.limit,
+        total=transaction_types_count,
+    )
 
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 

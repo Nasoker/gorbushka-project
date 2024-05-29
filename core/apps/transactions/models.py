@@ -88,10 +88,14 @@ class Transaction(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         if self.customer is not None:
-            last_customer_transactions = Transaction.objects.filter(customer=self.customer).order_by('-created_at')[:1]
+            last_customer_transaction = Transaction \
+                .objects \
+                .filter(customer=self.customer) \
+                .order_by('-created_at') \
+                .last()
 
-            if last_customer_transactions:
-                self.customer_balance = last_customer_transactions[0].customer_balance + self.amount
+            if last_customer_transaction:
+                self.customer_balance = last_customer_transaction.customer_balance + self.amount
             else:
                 self.customer_balance = self.amount
 
