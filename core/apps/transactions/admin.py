@@ -31,7 +31,7 @@ class TransactionAdmin(admin.ModelAdmin):
         ('Данные о поставщике', {'fields': ('provider',)}),
     )
 
-    readonly_fields = ('customer_balance', 'created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at')
 
     list_display = (
         'id',
@@ -39,7 +39,6 @@ class TransactionAdmin(admin.ModelAdmin):
         'amount',
         'comment',
         'customer',
-        'customer_balance',
         'provider',
         'created_at',
         'updated_at',
