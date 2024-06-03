@@ -10,6 +10,7 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         ('Личные данные', {'fields': ('email', 'first_name', 'last_name', 'phone', 'telegram')}),
         ('Права пользователя', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
+        ('Информация о сотруднике', {'fields': ('salary',)}),
         ('Аутентификация', {'fields': ('username', 'password')}),
         ('Информация о входе', {'fields': ('last_login', 'date_joined')}),
     )
@@ -36,6 +37,7 @@ class UserAdmin(UserAdmin):
         'phone',
         'telegram',
         'role',
+        'salary',
     )
 
     list_display_links = ('username',)

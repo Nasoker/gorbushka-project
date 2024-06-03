@@ -4,7 +4,11 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from core.apps.users.entities.users import User as UserEntity
+from core.apps.users.entities.users import (
+    Customer as CustomerEntity,
+    Employee as EmployeeEntity,
+    User as UserEntity,
+)
 
 
 class User(AbstractUser):
@@ -42,6 +46,14 @@ class User(AbstractUser):
         verbose_name='Роль',
     )
 
+    salary = models.DecimalField(
+        decimal_places=2,
+        max_digits=10,
+        null=True,
+        blank=True,
+        verbose_name='Зарплата сотрудника',
+    )
+
     def __str__(self):
         if not self.last_name:
             return f'{self.first_name} ({self.email})'
@@ -74,6 +86,36 @@ class User(AbstractUser):
             phone=str(self.phone),
             telegram=self.telegram,
             role=self.role,
+        )
+
+    def to_customer_entity(self) -> CustomerEntity:
+        balance = self.balance if self.balance else 0
+
+        return CustomerEntity(
+            id=self.id,
+            username=self.username,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+            phone=str(self.phone),
+            telegram=self.telegram,
+            role=self.role,
+            balance=balance,
+        )
+
+    def to_employee_entity(self) -> EmployeeEntity:
+        salary = self.salary if self.salary else 0
+
+        return EmployeeEntity(
+            id=self.id,
+            username=self.username,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+            phone=str(self.phone),
+            telegram=self.telegram,
+            role=self.role,
+            salary=float(salary),
         )
 
     class Meta:

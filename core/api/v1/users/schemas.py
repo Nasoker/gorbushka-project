@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from core.apps.users.entities.users import (
     Customer,
+    Employee,
     User,
 )
 
@@ -45,6 +46,24 @@ class CustomerOutSchema(UserOutSchema):
             telegram=entity.telegram,
             role=entity.role,
             balance=entity.balance,
+        )
+
+
+class EmployeeOutSchema(UserOutSchema):
+    salary: float
+
+    @staticmethod
+    def from_entity(entity: Employee) -> 'EmployeeOutSchema':
+        return EmployeeOutSchema(
+            id=entity.id,
+            username=entity.username,
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            email=entity.email,
+            phone=entity.phone,
+            telegram=entity.telegram,
+            role=entity.role,
+            salary=entity.salary,
         )
 
 
