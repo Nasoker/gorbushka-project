@@ -15,6 +15,7 @@ from core.api.schemas import (
 )
 from core.api.v1.users.filters import UserFilters
 from core.api.v1.users.schemas import (
+    CustomerOutSchema,
     UserBalanceOutSchema,
     UserOutSchema,
 )
@@ -54,6 +55,31 @@ def get_users_handler(
     )
 
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
+
+
+@router.get('/customers', response=ApiResponse[ListPaginatedResponse[CustomerOutSchema]])
+def get_customers_handler(
+        request: HttpRequest,
+        filters: Query[UserFilters],
+        pagination_in: Query[PaginationIn],
+) -> ApiResponse[ListPaginatedResponse[UserOutSchema]]:
+    try:
+        service: BaseUsersService = ORMUsersService()
+
+        customers = service.get_customers(filters=filters, pagination=pagination_in)
+        customers_count = service.get_customers_count(filters=filters)
+
+        items = [CustomerOutSchema.from_entity(obj) for obj in customers]
+        pagination_out: PaginationOut = PaginationOut(
+            offset=pagination_in.offset,
+            limit=pagination_in.limit,
+            total=customers_count,
+        )
+
+        return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
+    except Exception as e:
+        # TODO: add logging ?
+        print(e)
 
 
 @router.get('/{user_id}', response=ApiResponse[UserOutSchema])

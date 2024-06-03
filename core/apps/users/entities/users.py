@@ -11,4 +11,13 @@ class User:
     phone: str
     telegram: str
     role: str
+
+
+@dataclass
+class Customer(User):
     balance: float
+
+
+@dataclass
+class Employee(User):
+    salary: float

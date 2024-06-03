@@ -84,7 +84,6 @@ class Transaction(TimeStampedModel):
             transaction_type_id=self.transaction_type.pk,
             customer_id=self.customer.pk if self.customer else None,
             customer_username=self.customer.username if self.customer else None,
-            customer_balance=self.customer_balance,
             provider=self.provider,
             amount=self.amount,
             comment=self.comment,

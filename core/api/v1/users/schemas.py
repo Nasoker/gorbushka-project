@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 
-from core.apps.users.models import User as UserEntity
+from core.apps.users.entities.users import (
+    Customer,
+    User,
+)
 
 
 class UserOutSchema(BaseModel):
@@ -12,11 +15,27 @@ class UserOutSchema(BaseModel):
     phone: str | None = None
     telegram: str | None = None
     role: str
-    balance: float | None = None
 
     @staticmethod
-    def from_entity(entity: UserEntity) -> 'UserOutSchema':
+    def from_entity(entity: User) -> 'UserOutSchema':
         return UserOutSchema(
+            id=entity.id,
+            username=entity.username,
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            email=entity.email,
+            phone=entity.phone,
+            telegram=entity.telegram,
+            role=entity.role,
+        )
+
+
+class CustomerOutSchema(UserOutSchema):
+    balance: float
+
+    @staticmethod
+    def from_entity(entity: Customer) -> 'CustomerOutSchema':
+        return CustomerOutSchema(
             id=entity.id,
             username=entity.username,
             first_name=entity.first_name,

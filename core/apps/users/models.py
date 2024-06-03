@@ -74,7 +74,6 @@ class User(AbstractUser):
             phone=str(self.phone),
             telegram=self.telegram,
             role=self.role,
-            balance=self.balance,
         )
 
     class Meta:

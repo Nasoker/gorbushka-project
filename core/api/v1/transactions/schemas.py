@@ -25,7 +25,6 @@ class TransactionInSchema(BaseModel):
             amount=self.amount,
             comment=self.comment,
             transaction_type_id=None,
-            customer_balance=None,
             customer_username=None,
             created_at=None,
             updated_at=None,
@@ -37,7 +36,6 @@ class TransactionOutSchema(BaseModel):
     transaction_type: str
     customer_id: int | None
     customer_username: str | None
-    customer_balance: float | None
     provider: str | None
     amount: float
     comment: str | None
@@ -51,7 +49,6 @@ class TransactionOutSchema(BaseModel):
             transaction_type=entity.transaction_type,
             customer_id=entity.customer_id,
             customer_username=entity.customer_username,
-            customer_balance=entity.customer_balance,
             provider=entity.provider,
             amount=entity.amount,
             comment=entity.comment,

@@ -9,7 +9,6 @@ class Transaction:
     transaction_type_id: int | None
     customer_id: int | None
     customer_username: str | None
-    customer_balance: float | None
     provider: str | None
     amount: float
     comment: str | None
