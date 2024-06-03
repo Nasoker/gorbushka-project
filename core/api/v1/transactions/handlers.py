@@ -14,8 +14,9 @@ from core.api.schemas import (
 )
 from core.api.v1.transactions.filters import TransactionFilters
 from core.api.v1.transactions.schemas import (
-    TransactionInSchema,
+    CustomerTransactionOutSchema,
     TransactionOutSchema,
+    TransactionsTotalOutSchema,
     TransactionTypeOutSchema,
 )
 from core.apps.transactions.services.transactions import (
@@ -44,6 +45,21 @@ def get_transactions_handler(
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 
 
+@router.get('/total', response=ApiResponse[TransactionsTotalOutSchema])
+def get_transactions_total_handler(
+        request: HttpRequest,
+        filters: Query[TransactionFilters],
+):
+    service: BaseTransactionsService = ORMTransactionsService()
+
+    try:
+        total = service.get_transactions_total(filters=filters)
+        return ApiResponse(data=TransactionsTotalOutSchema(total=total))
+    except Exception as e:
+        # TODO: add logging ???
+        print(e)
+
+
 @router.get('/transaction_types', response=ApiResponse[ListPaginatedResponse[TransactionTypeOutSchema]])
 def get_transaction_types_handler(
         request: HttpRequest,
@@ -64,13 +80,18 @@ def get_transaction_types_handler(
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 
 
-@router.post('upsert', response=ApiResponse[TransactionOutSchema])
-def create_transaction_handler(
+@router.get('/{customer_id}', response=ApiResponse[ListPaginatedResponse[CustomerTransactionOutSchema]])
+def get_customer_transactions_handler(
         request: HttpRequest,
-        transaction_in: TransactionInSchema,
-) -> ApiResponse[TransactionOutSchema]:
+        customer_id: int,
+        pagination_in: Query[PaginationIn],
+) -> ApiResponse[ListPaginatedResponse[CustomerTransactionOutSchema]]:
     service: BaseTransactionsService = ORMTransactionsService()
 
-    transaction = service.create_or_update_transaction(transaction_in.to_entity())
+    transactions = service.get_customer_transactions(customer_id=customer_id, pagination=pagination_in)
+    transactions_count = service.get_customer_transactions_count(customer_id=customer_id)
 
-    return ApiResponse(data=TransactionOutSchema.from_entity(transaction))
+    items = [CustomerTransactionOutSchema.from_entity(obj) for obj in transactions]
+    pagination_out = PaginationOut(offset=pagination_in.offset, limit=pagination_in.limit, total=transactions_count)
+
+    return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))

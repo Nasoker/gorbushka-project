@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from core.apps.transactions.entities.transactions import (
+    CustomerTransaction as CustomerTransactionEntity,
     Transaction as TransactionEntity,
     TransactionType as TransactionTypeEntity,
 )
@@ -34,8 +35,6 @@ class TransactionInSchema(BaseModel):
 class TransactionOutSchema(BaseModel):
     id: int
     transaction_type: str
-    customer_id: int | None
-    customer_username: str | None
     provider: str | None
     amount: float
     comment: str | None
@@ -47,6 +46,23 @@ class TransactionOutSchema(BaseModel):
         return TransactionOutSchema(
             id=entity.id,
             transaction_type=entity.transaction_type,
+            provider=entity.provider,
+            amount=entity.amount,
+            comment=entity.comment,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+        )
+
+
+class CustomerTransactionOutSchema(TransactionOutSchema):
+    customer_id: int | None
+    customer_username: str | None
+
+    @staticmethod
+    def from_entity(entity: CustomerTransactionEntity) -> 'CustomerTransactionOutSchema':
+        return CustomerTransactionOutSchema(
+            id=entity.id,
+            transaction_type=entity.transaction_type,
             customer_id=entity.customer_id,
             customer_username=entity.customer_username,
             provider=entity.provider,
@@ -55,6 +71,10 @@ class TransactionOutSchema(BaseModel):
             created_at=entity.created_at,
             updated_at=entity.updated_at,
         )
+
+
+class TransactionsTotalOutSchema(BaseModel):
+    total: float
 
 
 class TransactionTypeOutSchema(BaseModel):

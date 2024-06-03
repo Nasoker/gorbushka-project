@@ -2,4 +2,5 @@ from ninja import Schema
 
 
 class TransactionFilters(Schema):
-    customer_id: int | None = None
+    types: list[int] | None = None
+    is_income: bool | None = None
