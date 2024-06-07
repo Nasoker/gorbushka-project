@@ -12,7 +12,10 @@ from django.db.models import (
 from django.db.models.functions import Concat
 
 from core.api.filters import PaginationIn
-from core.api.v1.users.filters import UserFilters
+from core.api.v1.users.filters import (
+    CustomerFilters,
+    UserFilters,
+)
 from core.apps.users.entities.users import (
     Customer,
     Employee,
@@ -36,11 +39,11 @@ class BaseUsersService(ABC):
         ...
 
     @abstractmethod
-    def get_customers(self, filters: UserFilters, pagination: PaginationIn) -> Iterable[Customer]:
+    def get_customers(self, filters: CustomerFilters, pagination: PaginationIn) -> Iterable[Customer]:
         ...
 
     @abstractmethod
-    def get_customers_count(self, filters: UserFilters) -> int:
+    def get_customers_count(self, filters: CustomerFilters) -> int:
         ...
 
     @abstractmethod
@@ -80,26 +83,27 @@ class ORMUsersService(BaseUsersService):
 
         return users[0]
 
-    def get_customers(self, filters: UserFilters, pagination: PaginationIn) -> Iterable[Customer]:
-        query = self._build_users_query(filters)
+    def get_customers(self, filters: CustomerFilters, pagination: PaginationIn) -> Iterable[Customer]:
+        query = self._build_customers_query(filters)
         query &= Q(role='Customer')
 
         qs = UserModel \
                  .objects \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
-                 .filter(query) \
                  .annotate(balance=Sum('transaction__amount')) \
+                 .filter(query) \
                  .select_related()[pagination.offset:pagination.offset + pagination.limit]
 
         return [customer.to_customer_entity() for customer in qs]
 
-    def get_customers_count(self, filters: UserFilters) -> int:
-        query = self._build_users_query(filters)
+    def get_customers_count(self, filters: CustomerFilters) -> int:
+        query = self._build_customers_query(filters)
         query &= Q(role='Customer')
 
         return UserModel \
             .objects \
             .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
+            .annotate(balance=Sum('transaction__amount')) \
             .filter(query) \
             .count()
 
@@ -133,5 +137,16 @@ class ORMUsersService(BaseUsersService):
                     | Q(first_name__icontains=filters.name)
                     | Q(last_name__icontains=filters.name)
             )
+
+        return query
+
+    def _build_customers_query(self, filters: CustomerFilters) -> Q:
+        query = self._build_users_query(filters)
+
+        if filters.is_debtor is not None:
+            if filters.is_debtor:
+                query &= Q(balance__lt=0)
+            else:
+                query &= (Q(balance__gte=0) | Q(balance=None))
 
         return query

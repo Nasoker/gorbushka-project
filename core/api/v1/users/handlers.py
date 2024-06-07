@@ -13,7 +13,10 @@ from core.api.schemas import (
     ApiResponse,
     ListPaginatedResponse,
 )
-from core.api.v1.users.filters import UserFilters
+from core.api.v1.users.filters import (
+    CustomerFilters,
+    UserFilters,
+)
 from core.api.v1.users.schemas import (
     CustomerOutSchema,
     EmployeeOutSchema,
@@ -61,7 +64,7 @@ def get_users_handler(
 @router.get('/customers', response=ApiResponse[ListPaginatedResponse[CustomerOutSchema]])
 def get_customers_handler(
         request: HttpRequest,
-        filters: Query[UserFilters],
+        filters: Query[CustomerFilters],
         pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginatedResponse[CustomerOutSchema]]:
     try:

@@ -1,10 +1,7 @@
-import decimal
-
 from django.db import models
 
 from core.apps.common.models import TimeStampedModel
 from core.apps.transactions.entities.transactions import (
-    CustomerTransaction as CustomerTransactionEntity,
     Transaction as TransactionEntity,
     TransactionType as TransactionTypeEntity,
 )
@@ -81,38 +78,12 @@ class Transaction(TimeStampedModel):
     def to_entity(self) -> TransactionEntity:
         return TransactionEntity(
             id=self.pk,
-            transaction_type=self.transaction_type.type,
-            transaction_type_id=self.transaction_type.pk,
+            type=self.transaction_type,
             provider=self.provider,
             amount=float(self.amount),
             comment=self.comment,
             created_at=self.created_at,
             updated_at=self.updated_at,
-        )
-
-    def to_customer_transaction_entity(self) -> CustomerTransactionEntity:
-        return CustomerTransactionEntity(
-            id=self.pk,
-            transaction_type=self.transaction_type.type,
-            transaction_type_id=self.transaction_type.pk,
-            customer_id=self.customer.pk if self.customer else None,
-            customer_username=self.customer.username if self.customer else None,
-            provider=self.provider,
-            amount=float(self.amount),
-            comment=self.comment,
-            created_at=self.created_at,
-            updated_at=self.updated_at,
-        )
-
-    @classmethod
-    def from_entity(cls, entity: TransactionEntity) -> 'Transaction':
-        return cls(
-            pk=entity.id,
-            transaction_type=TransactionType.objects.filter(pk=entity.transaction_type_id)[0],
-            customer=User.objects.filter(id=entity.customer_id)[0],
-            provider=entity.provider,
-            amount=decimal.Decimal(entity.amount),
-            comment=entity.comment,
         )
 
     class Meta:

@@ -14,7 +14,6 @@ from core.api.schemas import (
 )
 from core.api.v1.transactions.filters import TransactionFilters
 from core.api.v1.transactions.schemas import (
-    CustomerTransactionOutSchema,
     TransactionOutSchema,
     TransactionsTotalOutSchema,
     TransactionTypeOutSchema,
@@ -80,18 +79,18 @@ def get_transaction_types_handler(
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 
 
-@router.get('/{customer_id}', response=ApiResponse[ListPaginatedResponse[CustomerTransactionOutSchema]])
+@router.get('/{customer_id}', response=ApiResponse[ListPaginatedResponse[TransactionOutSchema]])
 def get_customer_transactions_handler(
         request: HttpRequest,
         customer_id: int,
         pagination_in: Query[PaginationIn],
-) -> ApiResponse[ListPaginatedResponse[CustomerTransactionOutSchema]]:
+) -> ApiResponse[ListPaginatedResponse[TransactionOutSchema]]:
     service: BaseTransactionsService = ORMTransactionsService()
 
     transactions = service.get_customer_transactions(customer_id=customer_id, pagination=pagination_in)
     transactions_count = service.get_customer_transactions_count(customer_id=customer_id)
 
-    items = [CustomerTransactionOutSchema.from_entity(obj) for obj in transactions]
+    items = [TransactionOutSchema.from_entity(obj) for obj in transactions]
     pagination_out = PaginationOut(offset=pagination_in.offset, limit=pagination_in.limit, total=transactions_count)
 
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))

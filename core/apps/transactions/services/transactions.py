@@ -12,7 +12,6 @@ from django.db.models import (
 from core.api.filters import PaginationIn
 from core.api.v1.transactions.filters import TransactionFilters
 from core.apps.transactions.entities.transactions import (
-    CustomerTransaction as CustomerTransaction,
     Transaction as Transaction,
     TransactionType as TransactionType,
 )
@@ -36,7 +35,7 @@ class BaseTransactionsService(ABC):
         ...
 
     @abstractmethod
-    def get_customer_transactions(self, customer_id: int, pagination: PaginationIn) -> Iterable[CustomerTransaction]:
+    def get_customer_transactions(self, customer_id: int, pagination: PaginationIn) -> Iterable[Transaction]:
         ...
 
     @abstractmethod
@@ -63,7 +62,7 @@ class ORMTransactionsService(BaseTransactionsService):
                  .objects \
                  .filter(query) \
                  .order_by('-created_at') \
-                 .select_related('transaction_type')[pagination.offset:pagination.offset + pagination.limit]
+                 .select_related()[pagination.offset:pagination.offset + pagination.limit]
 
         return [transaction.to_entity() for transaction in qs]
 
@@ -80,13 +79,14 @@ class ORMTransactionsService(BaseTransactionsService):
         else:
             return 0
 
-    def get_customer_transactions(self, customer_id: int, pagination: PaginationIn) -> Iterable[CustomerTransaction]:
+    def get_customer_transactions(self, customer_id: int, pagination: PaginationIn) -> Iterable[Transaction]:
         qs = TransactionModel \
                  .objects \
                  .filter(customer__pk=customer_id) \
-                 .order_by('-created_at')[pagination.offset:pagination.offset + pagination.limit]
+                 .order_by('-created_at') \
+                 .select_related()[pagination.offset:pagination.offset + pagination.limit]
 
-        return [transaction.to_customer_transaction_entity() for transaction in qs]
+        return [transaction.to_entity() for transaction in qs]
 
     def get_customer_transactions_count(self, customer_id: int) -> int:
         return TransactionModel.objects.filter(customer__pk=customer_id).count()

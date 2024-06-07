@@ -1,23 +1,11 @@
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field,
+)
 from datetime import datetime
 
-
-@dataclass
-class Transaction:
-    id: int | None
-    transaction_type: str
-    transaction_type_id: int | None
-    provider: str | None
-    amount: float
-    comment: str | None
-    created_at: datetime | None
-    updated_at: datetime | None
-
-
-@dataclass
-class CustomerTransaction(Transaction):
-    customer_id: int
-    customer_username: str
+from core.apps.common.enums import EntityStatus
+from core.apps.users.entities.users import User
 
 
 @dataclass
@@ -26,3 +14,15 @@ class TransactionType:
     type: str
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass
+class Transaction:
+    id: int | None = field(default=None)  # noqa
+    type: TransactionType | EntityStatus = field(default=EntityStatus.NOT_LOADED)
+    customer: User | None = field(default=None)
+    provider: str | None = field(default=None)
+    amount: float = field(default=0)
+    comment: str | None = field(default=None)
+    created_at: datetime | None = field(default_factory=datetime.now)
+    updated_at: datetime | None = field(default=None)
