@@ -118,6 +118,19 @@ class User(AbstractUser):
             salary=float(salary),
         )
 
+    @classmethod
+    def from_entity(cls, entity: UserEntity) -> 'User':
+        return cls(
+            id=entity.id,
+            username=entity.username,
+            first_name=entity.first_name,
+            last_name=entity.last_name,
+            email=entity.email,
+            phone=entity.phone,
+            telegram=entity.telegram,
+            role=entity.role,
+        )
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

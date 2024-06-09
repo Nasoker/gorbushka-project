@@ -28,6 +28,15 @@ class TransactionType(TimeStampedModel):
             updated_at=self.updated_at,
         )
 
+    @classmethod
+    def from_entity(cls, entity: TransactionTypeEntity) -> 'TransactionType':
+        return cls(
+            id=entity.id,
+            type=entity.type,
+            created_at=entity.created_at,
+            updated_at=entity.updated_at,
+        )
+
     class Meta:
         verbose_name = 'Тип транзакции'
         verbose_name_plural = 'Типы транзакций'
@@ -84,6 +93,18 @@ class Transaction(TimeStampedModel):
             comment=self.comment,
             created_at=self.created_at,
             updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_entity(cls, entity: TransactionEntity) -> 'Transaction':
+        customer = User.from_entity(entity.customer) if entity.customer else None
+
+        return cls(
+            transaction_type=TransactionType.from_entity(entity.type),
+            customer=customer,
+            amount=float(entity.amount),
+            comment=entity.comment,
+            provider=entity.provider,
         )
 
     class Meta:

@@ -74,14 +74,12 @@ class ORMUsersService(BaseUsersService):
             .count()
 
     def get_user(self, user_id: int) -> User | None:
-        qs = UserModel.objects.filter(Q(pk=user_id))
+        user_dto = UserModel.objects.filter(Q(pk=user_id)).first()
 
-        users = [user.to_entity() for user in qs]
-
-        if not users:
+        if not user_dto:
             raise UserNotFoundError()
 
-        return users[0]
+        return user_dto.to_entity()
 
     def get_customers(self, filters: CustomerFilters, pagination: PaginationIn) -> Iterable[Customer]:
         query = self._build_customers_query(filters)
