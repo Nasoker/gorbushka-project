@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     # 1st party
     'core.apps.users',
     'core.apps.transactions',
+    'core.apps.receipts',
     # 3rd party
     'phonenumber_field',
     'phonenumbers',
     'ninja_extra',
     'corsheaders',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+
+# Media files
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
