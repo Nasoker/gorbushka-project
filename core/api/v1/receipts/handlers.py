@@ -6,8 +6,15 @@ from ninja import (
 from ninja.errors import HttpError
 from ninja.files import UploadedFile
 
-from core.api.schemas import ApiResponse
-from core.api.v1.receipts.schemas import ReceiptOutSchema
+from core.api.filters import PaginationOut
+from core.api.schemas import (
+    ApiResponse,
+    ListPaginatedResponse,
+)
+from core.api.v1.receipts.schemas import (
+    ReceiptOutSchema,
+    TransactionIdsInSchema,
+)
 from core.apps.receipts.services.receipts import (
     BaseReceiptService,
     ORMReceiptService,
@@ -15,6 +22,24 @@ from core.apps.receipts.services.receipts import (
 
 
 router = Router(tags=['Receipts'])
+
+
+@router.post('', response=ApiResponse[ListPaginatedResponse[ReceiptOutSchema]])
+def handle_get_receipts(
+        request: HttpRequest,
+        transaction_ids_in: TransactionIdsInSchema,
+) -> ApiResponse[ListPaginatedResponse[ReceiptOutSchema]]:
+    service: BaseReceiptService = ORMReceiptService()
+
+    receipts = service.get_receipts_by_transaction_ids(transaction_ids_in.transaction_ids)
+    items = [ReceiptOutSchema.from_entity(obj) for obj in receipts]
+    pagination_out: PaginationOut = PaginationOut(
+        offset=0,
+        limit=len(items),
+        total=len(items),
+    )
+
+    return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
 
 
 @router.get('/{transaction_id}', response=ApiResponse[ReceiptOutSchema])

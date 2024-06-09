@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
 
+class TransactionIdsInSchema(BaseModel):
+    transaction_ids: list[int]
+
+
 class ReceiptOutSchema(BaseModel):
     id: int
     transaction_id: int
