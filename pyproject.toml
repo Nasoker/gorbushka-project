@@ -16,6 +16,7 @@ django-phonenumber-field = "^7.3.0"
 django-phonenumbers = "^1.0.1"
 django-ninja-jwt = "^5.3.0"
 django-cors-headers = "^4.3.1"
+django-cleanup = "^8.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
