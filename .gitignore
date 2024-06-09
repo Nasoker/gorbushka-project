@@ -6,5 +6,6 @@ poetry.lock
 templates/
 core/project/settings/local.py
 static/*
+media/*
 !static/.gitkeep
 *.sqlite3
