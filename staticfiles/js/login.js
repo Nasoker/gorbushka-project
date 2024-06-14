@@ -15,7 +15,7 @@ const loginActivity = (state) => {
 
 if(getCookieValue("role") && getCookieValue("refresh")){
     loginActivity(false);
-    window.location = getCookieValue("role") === "Customer" ? window.location = "./orders.html" : window.location = "./clients.html";
+    window.location = getCookieValue("role") === "Customer" ? `${window.location.origin}/orders` : `${window.location.origin}/clients`;
 }
 
 formUser.addEventListener("submit", (e) => {
@@ -55,7 +55,7 @@ loginBtn.addEventListener("click", () => {
                                 document.cookie = `phone=${data.data.phone}; path=/;`;
                                 document.cookie = `telegram=${data.data.telegram}; path=/;`;
     
-                                window.location = data.data.role === "Customer" ? window.location = "./orders.html" : window.location = "./clients.html";
+                                window.location = data.data.role === "Customer" ? `${window.location.origin}/orders` : `${window.location.origin}/clients`;
                             }
                         }
                     )

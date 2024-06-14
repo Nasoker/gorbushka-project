@@ -33,7 +33,7 @@ export const checkTokens = async () => {
     checkExit();
 
     if (!getCookieValue("refresh")) {
-        window.location = "./login.html";
+        window.location = `${window.location.origin}/login`;
         return; // Остановить выполнение функции, если нет кука "refresh"
     }
 
@@ -52,7 +52,7 @@ export const checkTokens = async () => {
             });
 
             if (data.detail) {
-                window.location = "./login.html";
+                window.location = `${window.location.origin}/login`
                 return;
             } else {
                 document.cookie = `access=${data.access}; path=/; max-age=3600`;
@@ -61,7 +61,7 @@ export const checkTokens = async () => {
         } catch (error) {
             console.error("Ошибка при запросе обновления токенов:", error);
             // Можно добавить обработку ошибок, если необходимо
-            window.location = "./login.html";
+            window.location = `${window.location.origin}/login`
             return;
         }
     }
@@ -73,11 +73,11 @@ const checkRole = () => {
 
     if (role === "Customer") {
         if (!location.includes("orders")) {
-            window.location = "./orders.html"
+            window.location = `${window.location.origin}/orders`
         }
     } else if (role === "Moderator") {
         if (!location.includes("client")) {
-            window.location = "./clients.html"
+            window.location = `${window.location.origin}/clients`
         }
     }
 }
