@@ -79,6 +79,6 @@ checkTokens().then(() => {
     )
     
     clientsDebtsLink.addEventListener("click", () => {
-        window.location = "./clients.html#is_debtor";
+        window.location = `${window.location.origin}/clients#is_debtor`;
     })
 });
