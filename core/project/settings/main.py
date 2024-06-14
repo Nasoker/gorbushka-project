@@ -30,7 +30,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['193.168.49.68', 'avelshop.ru', 'avelshop.store', 'localhost', '0.0.0.0']
 
 # Application definition
 
@@ -144,6 +144,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom settings
+
+CSRF_COOKIE_SECURE = True
 
 AUTH_USER_MODEL = 'users.User'
 
