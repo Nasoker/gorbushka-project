@@ -99,6 +99,8 @@ checkTokens().then(() => {
                     records.classList.remove("active");
                     noRecords.classList.add("active");
                 } else {
+                    records.classList.add("active");
+                    noRecords.classList.remove("active");
                     for (let i = 0; i < MAX_LINES; i++) {
                         if (i > data.data.items.length - 1) {
                             lines[i].style.display = "none";

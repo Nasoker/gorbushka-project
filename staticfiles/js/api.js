@@ -1,4 +1,5 @@
-export const SITE = "http://localhost:8000";
+// export const SITE = "http://localhost:8000";
+export const SITE = "http://aviorshop.ru";
 
 export const sendFetchPost = (page, body, funcs) => {
     fetch(`${SITE}/api/${page}`, {

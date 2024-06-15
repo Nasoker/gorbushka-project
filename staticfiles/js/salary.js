@@ -127,7 +127,7 @@ checkTokens().then(() => {
                 alert(data.errors[0])
             } else {
                 data.data.items.forEach((elem, i) => {
-                    createLine(tableBody, elem);
+                    elem.salary !== 0 && createLine(tableBody, elem);
                 })
 
                 plugActivity(false);
