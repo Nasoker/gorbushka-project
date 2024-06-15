@@ -28,12 +28,13 @@ from core.project import views
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('adminsecure/', admin.site.urls),
     path('api/', include('core.api.urls')),
     path('capitalization/', views.capitalization, name='capitalization'),
     path('client/', views.client, name='client'),
     path('clients/', views.clients, name='clients'),
     path('login/', views.login, name='login'),
+    path('', views.login, name='login'),
     path('orders/', views.orders, name='orders'),
     path('report/', views.report, name='report'),
     path('salary/', views.salary, name='salary'),
