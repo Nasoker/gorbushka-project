@@ -1,5 +1,5 @@
 // export const SITE = "http://localhost:8000";
-export const SITE = "http://avelshop.ru";
+export const SITE = "https://avelshop.ru";
 
 export const sendFetchPost = (page, body, funcs) => {
     fetch(`${SITE}/api/${page}`, {
