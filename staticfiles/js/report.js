@@ -49,11 +49,11 @@ checkTokens().then(() => {
     
     costsLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Расходы");
-        window.location = "./budget.html";
+        window.location = `${window.location.origin}/budget`;
     });
 
     profitLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Доходы");
-        window.location = "./budget.html";
+        window.location = `${window.location.origin}/budget`;
     });
 });

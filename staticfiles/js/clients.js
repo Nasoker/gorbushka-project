@@ -79,7 +79,7 @@ checkTokens().then(() => {
         elem.addEventListener("click", (e) => {
             e.preventDefault();
             sessionStorage.setItem("client_id", elem.id);
-            window.location = "./client.html";
+            window.location = `${window.location.origin}/client`;
         });
     });
 

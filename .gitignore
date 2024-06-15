@@ -3,7 +3,6 @@
 poetry.lock
 *.pyc
 .env
-templates/
 core/project/settings/local.py
 static/*
 media/*

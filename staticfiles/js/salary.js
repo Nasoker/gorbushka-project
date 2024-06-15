@@ -91,7 +91,7 @@ checkTokens().then(() => {
                         const salaryTransactionID = data.data.items.find((elem) => elem.type === "Заработная плата").id;
 
                         sendFetchPostWithAccess(
-                            `v1/transactions/`,
+                            `transactions/`,
                             getCookieValue("access"),
                             {
                                 "transaction_type_id": salaryTransactionID,
@@ -177,6 +177,6 @@ const createLogicCountSalaryModal = () => {
     const button = countSalaryModal.querySelector(".btn-close")
 
     button.addEventListener("click", () => {
-        window.location = "./salary.html";
+        window.location = `${window.location.origin}/salary`;
     })
 }

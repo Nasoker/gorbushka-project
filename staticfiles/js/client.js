@@ -47,7 +47,7 @@ const changeLine = (node, value) => {
 
 checkTokens().then(() => {
     if (!sessionStorage.getItem("client_id")) {
-        window.location = "./clients.html";
+        window.location = `${window.location.origin}/clients`;
     }
 
     const balance = document.querySelector("#balance");
@@ -80,6 +80,24 @@ checkTokens().then(() => {
                     if (data.data.pagination.total === 0) {
                         records.classList.remove("active");
                         noRecords.classList.add("active");
+
+                        if (firstTime) {
+                            plugActivity(false);
+                            isMobile && checkMobile();
+                        } else {
+                            func();
+                            sendFetchGet(
+                                `users/${CLIENT_ID}/balance`,
+                                getCookieValue("access"),
+                                (data) => {
+                                    if (data.errors.length > 0) {
+                                        alert(data.errors[0])
+                                    } else {
+                                        changeValue(balance, data.data.balance, true);
+                                    }
+                                }
+                            )
+                        }
                     } else {
                         const arrId = [];
                         data.data.items.forEach((elem) => arrId.push(elem.id));
@@ -346,7 +364,6 @@ const createLogicForChangeModal = (id, fetch) => {
                                         getCookieValue("access"),
                                         form,
                                         (data) => {
-                                            console.log(data)
                                             if (!data.detail) {
                                                 alert(data.detail[0].msg)
                                             } else {
@@ -477,7 +494,6 @@ const createLogicForFiles = (fetch) => {
                 getCookieValue("access"),
                 form,
                 (data) => {
-                    console.log(data)
                     if (data.detail) {
                         alert(data.detail[0].msg)
                     } else {
