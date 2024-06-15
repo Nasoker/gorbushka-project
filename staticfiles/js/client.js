@@ -114,11 +114,9 @@ checkTokens().then(() => {
                                 transaction_ids: arrId,
                             },
                             (data) => {
-                                console.log(data)
                                 if (data.errors.length > 0) {
                                     alert(data.errors[0])
                                 } else {
-                                    console.log("yes")
                                     for (let i = 0; i < MAX_LINES; i++) {
                                         if (i > transactions.length - 1) {
                                             lines[i].style.display = "none";
