@@ -23,9 +23,7 @@ from django.urls import (
 from core.project import views
 
 
-# TODO: comment for PROD
 # from core.project.settings import local as settings
-
 
 urlpatterns = [
     path('adminsecure/', admin.site.urls),
@@ -41,6 +39,5 @@ urlpatterns = [
     path('budget/', views.budget, name='budget'),
 ]
 
-# TODO: comment for PROD
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -68,14 +68,12 @@ class Transaction(TimeStampedModel):
     )
 
     amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=3,
+        max_digits=12,
+        decimal_places=2,
         blank=False,
         null=False,
         verbose_name='Сумма операции',
     )
-
-    # TODO: how to store pdf files in django ????
 
     comment = models.TextField(
         max_length=2000,
