@@ -2,6 +2,7 @@ from abc import (
     ABC,
     abstractmethod,
 )
+from datetime import datetime
 from typing import Iterable
 
 from django.db.models import (
@@ -209,5 +210,10 @@ class ORMTransactionsService(BaseTransactionsService):
                 query &= Q(amount__gte=0)
             else:
                 query &= Q(amount__lt=0)
+
+        if filters.is_current_month:
+            today = datetime.now()
+            query &= Q(created_at__month=today.month)
+            query &= Q(created_at__year=today.year)
 
         return query
