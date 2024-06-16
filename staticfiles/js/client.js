@@ -1,5 +1,5 @@
 import { SITE, sendFetchGet, sendFetchPostFile, sendFetchPostWithAccess, sendFetchPut } from "./api.js";
-import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile } from "./functions.js";
+import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile, deletePagination } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 let minusBalance, plusBalance
@@ -58,12 +58,15 @@ checkTokens().then(() => {
     const phone = document.querySelector("#phone");
     const CLIENT_ID = sessionStorage.getItem("client_id");
     const records = document.querySelector("#records");
+    const linkOnlyForAdmins = document.querySelectorAll("#onlyForAdmin");
     const noRecords = document.querySelector("#no-records");
 
     const MAX_LINES = 10;
 
     name.textContent = getCookieValue("username");
     sessionStorage.removeItem("client_id");
+
+    getCookieValue("role") === "Moderator" && linkOnlyForAdmins.forEach((elem) => elem.remove());
 
     const sendTransactions = (firstTime, func, page) => {
         const requestLink = page ?
@@ -106,6 +109,8 @@ checkTokens().then(() => {
                         data.data.items.forEach((elem) => arrId.push(elem.id));
                         const transactions = data.data.items;
                         const transactionsData = data;
+                        const pagination = document.querySelector(".pagination");
+                        const pageItems = document.querySelectorAll(".page-link");
 
                         sendFetchPostWithAccess(
                             "receipts/",
@@ -135,6 +140,22 @@ checkTokens().then(() => {
                                     transactionsData.id = CLIENT_ID;
 
                                     firstTime && createPagination(transactionsData, lines, changeLine, "transactionsWithFiles");
+
+                                    if(
+                                        !firstTime &&
+                                        transactionsData.data.pagination.total > transactionsData.data.pagination.limit && 
+                                        pagination.style.display === "none"
+                                    ) {
+                                        createPagination(transactionsData, lines, changeLine, "transactionsWithFiles");
+                                    }
+                                    
+                                    if(
+                                        pageItems.length > 0 &&
+                                        page !== pageItems[1].value
+                                    ) {
+                                        deletePagination();
+                                        createPagination(transactionsData, lines, changeLine, "transactionsWithFiles");
+                                    }
                                 }
 
                                 if (firstTime) {
@@ -162,7 +183,7 @@ checkTokens().then(() => {
         )
     }
 
-    createLogicForAddModal(CLIENT_ID, sendTransactions);
+    getCookieValue("role") !== "Moderator" && createLogicForAddModal(CLIENT_ID, sendTransactions);
     createLogicForChangeModal(CLIENT_ID, sendTransactions);
     createLogicForFiles(sendTransactions);
     createLogicForSubtotal(lines);
@@ -297,6 +318,7 @@ const createLogicForChangeModal = (id, fetch) => {
     const changeOperationFile = document.querySelector(".modal-input-file");
     let operationId = 0, startValueSum, startValueComment
 
+    getCookieValue("role") === "Moderator" && changeOperationModalInputs.forEach((elem) => elem.remove())
 
     const modalActivity = (state) => {
         [...changeOperationModalInputs, ...changeOperationModalBtns].forEach((elem) => {
@@ -323,83 +345,120 @@ const createLogicForChangeModal = (id, fetch) => {
             const lineElems = lineParent.querySelectorAll("td");
             const backdrop = document.querySelector(".modal-backdrop");
 
-            const sum = lineElems[2].textContent;
-            const comment = lineElems[4].textContent;
+            if (getCookieValue("role") === "Moderator" && lineElems[5].children[0].textContent === "Просмотреть") {
+                operationId = Number(lineParent.id);
 
-            changeOperationModalInputs[0].value = Number(sum.replace(/[\s.,%]/g, ''));
-            changeOperationModalInputs[1].value = comment;
+                backdrop.style.zIndex = 2;
+                backdrop.classList.add("show");
+                changeOperationModal.classList.add("show");
+                changeOperationModal.style.display = "block";
 
-            operationId = Number(lineParent.id);
+                changeOperationFile.style.display =
+                    lineElems[5].children[0].textContent === "Просмотреть" ? "block" : "none";
 
-            backdrop.style.zIndex = 2;
-            backdrop.classList.add("show");
-            changeOperationModal.classList.add("show");
-            changeOperationModal.style.display = "block";
-            changeOperationFile.style.display =
-                lineElems[5].children[0].textContent === "Просмотреть" ? "block" : "none";
+            } else if (getCookieValue("role") !== "Moderator") {
+                const sum = lineElems[2].textContent;
+                const comment = lineElems[4].textContent;
+
+                changeOperationModalInputs[0].value = Number(sum.replace(/[\s.,%]/g, ''));
+                changeOperationModalInputs[1].value = comment;
+
+                operationId = Number(lineParent.id);
+
+                backdrop.style.zIndex = 2;
+                backdrop.classList.add("show");
+                changeOperationModal.classList.add("show");
+                changeOperationModal.style.display = "block";
+                changeOperationFile.style.display =
+                    lineElems[5].children[0].textContent === "Просмотреть" ? "block" : "none";
+            }
         })
     });
 
     changeOperationModalBtns.forEach((elem, i) => {
         elem.addEventListener("click", () => {
             if (i === 2) {
-                if (changeOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
-                    modalActivity(false);
-                    changeOperationModalInputs[0].style.outline = "none";
-
-                    sendFetchPut(
-                        `transactions/${operationId}/update`,
+                if (getCookieValue("role") === "Moderator") {
+                    const form = new FormData();
+                    form.append("file", changeOperationFile.files[0])
+                    sendFetchPostFile(
+                        `receipts/${operationId}/save`,
                         getCookieValue("access"),
-                        {
-                            "transaction_type_id": Number(changeOperationModalInputs[0].value) >= 0 ? plusBalance : minusBalance,
-                            "amount": Number(changeOperationModalInputs[0].value),
-                            "comment": changeOperationModalInputs[1].value
-                        },
+                        form,
                         (data) => {
-                            if (data.errors.length > 0) {
-                                alert(data.errors[0])
-                            } else {
-                                if (changeOperationFile.style.display === "block" && changeOperationFile.value) {
-                                    const form = new FormData();
-                                    form.append("file", changeOperationFile.files[0])
-                                    sendFetchPostFile(
-                                        `receipts/${operationId}/save`,
-                                        getCookieValue("access"),
-                                        form,
-                                        (data) => {
-                                            if (!data.detail) {
-                                                alert(data.detail[0].msg)
-                                            } else {
-                                                fetch(
-                                                    false,
-                                                    () => {
-                                                        alert(`Изменена операция на сумму : ${Number(changeOperationModalInputs[0].value)} рублей. Файл изменен!`)
-                                                        closeModal();
-                                                        modalActivity(true);
-                                                    },
-                                                    document.querySelectorAll("input.page-link")[0] && 
-                                                        document.querySelector("input.page-link").value
-                                                )
-                                            }
-                                        }
-                                    )
-                                } else {
-                                    fetch(
-                                        false,
-                                        () => {
-                                            alert(`Изменена операция на сумму : ${Number(changeOperationModalInputs[0].value)} рублей.`)
-                                            closeModal();
-                                            modalActivity(true);
-                                        },
-                                        document.querySelectorAll("input.page-link")[0] && 
-                                            document.querySelector("input.page-link").value
-                                    )
-                                }
+                            if (data.data) {
+                                fetch(
+                                    false,
+                                    () => {
+                                        alert(`Файл изменен!`)
+                                        closeModal();
+                                        modalActivity(true);
+                                    },
+                                    document.querySelectorAll("input.page-link")[0] &&
+                                    document.querySelector("input.page-link").value
+                                )
                             }
                         }
                     )
                 } else {
-                    changeOperationModalInputs[0].style.outline = "1px solid red";
+                    if (changeOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
+                        modalActivity(false);
+                        changeOperationModalInputs[0].style.outline = "none";
+
+                        sendFetchPut(
+                            `transactions/${operationId}/update`,
+                            getCookieValue("access"),
+                            {
+                                "transaction_type_id": Number(changeOperationModalInputs[0].value) >= 0 ? plusBalance : minusBalance,
+                                "amount": Number(changeOperationModalInputs[0].value),
+                                "comment": changeOperationModalInputs[1].value
+                            },
+                            (data) => {
+                                if (data.errors.length > 0) {
+                                    alert(data.errors[0])
+                                } else {
+                                    if (changeOperationFile.style.display === "block" && changeOperationFile.value) {
+                                        const form = new FormData();
+                                        form.append("file", changeOperationFile.files[0])
+                                        sendFetchPostFile(
+                                            `receipts/${operationId}/save`,
+                                            getCookieValue("access"),
+                                            form,
+                                            (data) => {
+                                                if (!data.detail) {
+                                                    alert(data.detail[0].msg)
+                                                } else {
+                                                    fetch(
+                                                        false,
+                                                        () => {
+                                                            alert(`Изменена операция на сумму : ${Number(changeOperationModalInputs[0].value)} рублей. Файл изменен!`)
+                                                            closeModal();
+                                                            modalActivity(true);
+                                                        },
+                                                        document.querySelectorAll("input.page-link")[0] &&
+                                                        document.querySelector("input.page-link").value
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    } else {
+                                        fetch(
+                                            false,
+                                            () => {
+                                                alert(`Изменена операция на сумму : ${Number(changeOperationModalInputs[0].value)} рублей.`)
+                                                closeModal();
+                                                modalActivity(true);
+                                            },
+                                            document.querySelectorAll("input.page-link")[0] &&
+                                            document.querySelector("input.page-link").value
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    } else {
+                        changeOperationModalInputs[0].style.outline = "1px solid red";
+                    }
                 }
             } else {
                 closeModal();
@@ -509,8 +568,8 @@ const createLogicForFiles = (fetch) => {
                                 closeModal();
                                 modalActivity(true);
                             },
-                            document.querySelectorAll("input.page-link")[0] && 
-                                document.querySelector("input.page-link").value
+                            document.querySelectorAll("input.page-link")[0] &&
+                            document.querySelector("input.page-link").value
                         )
                     }
                 }
