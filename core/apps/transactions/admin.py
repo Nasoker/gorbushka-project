@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Sum
 
 from .models import (
     Transaction,
@@ -18,6 +19,8 @@ class TransactionType(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/transactions/transaction/change_list.html'
+
     fieldsets = (
         ('Общая информация', {'fields': ('transaction_type', 'amount', 'comment')}),
         ('Данные о клиенте', {'fields': ('customer',)}),
@@ -45,3 +48,11 @@ class TransactionAdmin(admin.ModelAdmin):
     )
 
     list_display_links = ('transaction_type',)
+
+    def get_amount_sum(self):
+        return Transaction.objects.aggregate(amount_sum=Sum('amount'))['amount_sum']
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['amount_sum'] = self.get_amount_sum()
+        return super().changelist_view(request, extra_context)
