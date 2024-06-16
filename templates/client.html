@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 {% load static %}
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -90,9 +91,14 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'clients' %}"><i
-                        class="fas fa-user"></i><span>Клиенты</span></a></li>
+                                class="fas fa-user"></i><span>Клиенты</span></a></li>
+                    <li class="nav-item" id="onlyForAdmin"><a class="nav-link" href="{% url 'capitalization' %}"><i
+                                class="fas fa-dollar-sign"></i><span>Капитализация</span></a></li>
+                    <li class="nav-item" id="onlyForAdmin"><a class="nav-link" href="{% url 'report' %}"><i
+                                class="fas fa-chart-bar"></i><span>Отчетность</span></a></li>
+                    <li class="nav-item" id="onlyForAdmin"><a class="nav-link" href="{% url 'salary' %}"><i
+                                class="fas fa-coins"></i><span>Зарплатная ведомость</span></a></li>
                 </ul>
             </div>
         </nav>
@@ -122,7 +128,7 @@
                                 <div>
                                     <p class="text-muted mb-2 text-xxl-start">Баланс</p>
                                     <h5 class="balance fw-bold" id="balance"></h5>
-                                    <button class="btn btn-primary text-center add-operation" type="button">Добавить
+                                    <button class="btn btn-primary text-center add-operation" id="onlyForAdmin" type="button">Добавить
                                         операцию</button>
                                 </div>
                             </div>
@@ -171,8 +177,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -183,8 +188,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -195,8 +199,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -207,8 +210,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -219,8 +221,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -231,8 +232,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -243,8 +243,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -255,8 +254,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -267,8 +265,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                     <tr>
@@ -279,8 +276,7 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"><button
-                                                                class="btn btn-primary text-center"
-                                                                id="modal-add-file"
+                                                                class="btn btn-primary text-center" id="modal-add-file"
                                                                 type="button">Добавить</button></td>
                                                     </tr>
                                                 </tbody>

@@ -110,15 +110,14 @@ checkTokens().then(() => {
                                 alert(data.errors[0])
                             } else {
                                 for (let i = 0; i < MAX_LINES; i++) {
-                                    data.data.items.find((file) => {
-                                        if (file.transaction_id === transactions[i].id) {
-                                            transactions[i].file = file.file_path;
-                                        }
-                                    })
-
                                     if (i > transactions.length - 1) {
                                         lines[i].style.display = "none";
                                     } else {
+                                        data.data.items.find((file) => {
+                                            if (file.transaction_id === transactions[i].id) {
+                                                transactions[i].file = file.file_path;
+                                            }
+                                        })
                                         lines[i].style.display = "table-row";
                                         changeLine(lines[i], transactions[i]);
                                     }

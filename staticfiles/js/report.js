@@ -10,14 +10,14 @@ checkTokens().then(() => {
     const costs = document.querySelector("#costs");
     const costsLink = document.querySelector("#costs-link")
     const netProfit = document.querySelector("#net-profit");
-    const profit= document.querySelector("#profit");
+    const profit = document.querySelector("#profit");
     const profitLink = document.querySelector("#profit-link")
     let costsSum, profitSum;
-    
+
     name.textContent = getCookieValue("username");
 
     sendFetchGet(
-        `transactions/total?is_income=false`,
+        `transactions/total?is_income=false&is_current_month=true`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -27,33 +27,47 @@ checkTokens().then(() => {
                 costs.textContent = change(costsSum);
 
                 sendFetchGet(
-                    `transactions/total?is_income=true`,
+                    `transactions/transaction_types?offset=0&limit=100`,
                     getCookieValue("access"),
                     (data) => {
                         if (data.errors.length > 0) {
                             alert(data.errors[0])
                         } else {
-                            profitSum = data.data.total;
-                            profit.textContent = change(profitSum);
-                            netProfit.textContent = change(profitSum + costsSum);
-                            
-                            plugActivity(false);
-                            isMobile && checkMobile();
+                            const dayProfitID = data.data.items.find((elem) => elem.type === "Ежедневная прибыль").id;
+                            sessionStorage.setItem("transaction_id", dayProfitID);
+
+                            sendFetchGet(
+                                `transactions/total?types=${dayProfitID}&is_current_month=true`,
+                                getCookieValue("access"),
+                                (data) => {
+                                    if (data.errors.length > 0) {
+                                        alert(data.errors[0])
+                                    } else {
+                                        profitSum = data.data.total;
+                                        profit.textContent = change(profitSum);
+                                        netProfit.textContent = change(profitSum + costsSum);
+                                        
+                                        plugActivity(false);
+                                        isMobile && checkMobile();
+                                    }
+                                }
+                            )
+
                         }
                     }
                 )
             }
         }
     )
-    
-    
+
+
     costsLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Расходы");
         window.location = `${window.location.origin}/budget`;
     });
 
     profitLink.addEventListener("click", () => {
-        sessionStorage.setItem("transaction_type", "Доходы");
+        sessionStorage.setItem("transaction_type", "Ежедневная прибыль");
         window.location = `${window.location.origin}/budget`;
     });
 });
