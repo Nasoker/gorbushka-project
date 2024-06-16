@@ -17,7 +17,7 @@ checkTokens().then(() => {
     name.textContent = getCookieValue("username");
 
     sendFetchGet(
-        `transactions/total?is_income=false`,
+        `transactions/total?is_income=false&is_current_month=true`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -34,9 +34,10 @@ checkTokens().then(() => {
                             alert(data.errors[0])
                         } else {
                             const dayProfitID = data.data.items.find((elem) => elem.type === "Ежедневная прибыль").id;
+                            sessionStorage.setItem("transaction_id", dayProfitID);
 
                             sendFetchGet(
-                                `transactions/total?types=${dayProfitID}`,
+                                `transactions/total?types=${dayProfitID}&is_current_month=true`,
                                 getCookieValue("access"),
                                 (data) => {
                                     if (data.errors.length > 0) {
@@ -66,7 +67,7 @@ checkTokens().then(() => {
     });
 
     profitLink.addEventListener("click", () => {
-        sessionStorage.setItem("transaction_type", "Доходы");
+        sessionStorage.setItem("transaction_type", "Ежедневная прибыль");
         window.location = `${window.location.origin}/budget`;
     });
 });

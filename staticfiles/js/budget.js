@@ -41,9 +41,19 @@ checkTokens().then(() => {
     const noRecords = document.querySelector("#no-records");
     const MAX_LINES = 10;
 
+    const responseTotalLink = sessionStorage.getItem("transaction_type") === "Ежедневная прибыль" ?
+        `transactions/total?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true`
+        :
+        `transactions/total?is_income=false&is_current_month=true`
+
+    const responseTransactionLink = sessionStorage.getItem("transaction_type") === "Ежедневная прибыль" ?
+        `transactions/?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true&offset=0&limit=${MAX_LINES}`
+        :
+        `transactions/?is_income=false&is_current_month=true&offset=0&limit=${MAX_LINES}`
+
     name.textContent = getCookieValue("username");
     sendFetchGet(
-        `transactions/total?is_income=${sessionStorage.getItem("transaction_type") === "Доходы"}`,
+        responseTotalLink,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -52,7 +62,7 @@ checkTokens().then(() => {
                 changeValue(balance, data.data.total, true);
                 balanceTitle.textContent = sessionStorage.getItem("transaction_type");
                 sendFetchGet(
-                    `transactions?is_income=${sessionStorage.getItem("transaction_type") === "Доходы"}&limit=${MAX_LINES}`,
+                    responseTransactionLink,
                     getCookieValue("access"),
                     (data) => {
                         if (data.errors.length > 0) {

@@ -131,7 +131,10 @@ const fetchPage = (name, curPage, limit, id) => {
         case 'transactionsWithFiles':
             return `transactions/${id}?offset=${(curPage - 1) * limit}&limit=${limit}`;
         case 'transactions_types':
-            return `transactions?is_income=${id === "Доходы"}&offset=${(curPage - 1) * limit}&limit=${limit}`;
+            return id === "Ежедневная прибыль" ?
+                `transactions/?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true&offset=${(curPage - 1) * limit}&limit=${limit}`
+                :
+                `transactions/?is_income=false&is_current_month=true&offset=${limit}&limit=${limit}`
         case 'customers':
             return window.location.hash === "#is_debtor" ?
                 `users/customers?offset=${(curPage - 1) * limit}&limit=${limit}&is_debtor=true` :

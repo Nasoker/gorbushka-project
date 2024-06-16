@@ -1,18 +1,18 @@
-import { sendFetchGet } from "./api.js";
+import { sendFetchGet, sendFetchPut } from "./api.js";
 import { checkMobile, checkTokens, getCookieValue, isMobile, plugActivity } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
-function parseCurrency(str) {
+const parseCurrency = (str) => {
     // Удаляем все точки и слова из строки
     let cleanedStr = str.replace(/[^\d]/g, '');
     // Преобразуем полученную строку в число
     return parseInt(cleanedStr, 10);
 }
 
-checkTokens().then(() => {
-    const change = (value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " рублей" }
+const change = (value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " рублей" }
 
+checkTokens().then(() => {
     const name = document.querySelector("#username");
     const capitalizationSum = document.querySelector("#sum-capitalization");
     const productSum = document.querySelector("#sum-product");
@@ -60,13 +60,27 @@ checkTokens().then(() => {
                                         alert(data.errors[0])
                                     } else {
                                         clientsDebtsSum.textContent = change(data.data.total);
-                                        productSum.textContent = change(0);
-                                        defectiveSum.textContent = change(0);
                                         capSum += Math.abs(data.data.total);
-                                        capitalizationSum.textContent = change(capSum);
 
-                                        plugActivity(false);
-                                        isMobile && checkMobile();
+                                        sendFetchGet(
+                                            "finances/",
+                                            getCookieValue("access"),
+                                            (data) => {
+                                                if (data.errors.length > 0) {
+                                                    alert(data.errors[0])
+                                                } else {
+                                                    productSum.textContent = change(data.data.amount_in_goods);
+                                                    defectiveSum.textContent = change(data.data.amount_in_defects);
+                                                    capSum += data.data.amount_in_goods;
+                                                    capSum += data.data.amount_in_defects;
+
+                                                    capitalizationSum.textContent = change(capSum);
+
+                                                    plugActivity(false);
+                                                    isMobile && checkMobile();
+                                                }
+                                            }
+                                        )
                                     }
                                 }
                             )
@@ -92,6 +106,7 @@ const createLogicForChangeModal = () => {
     const changeModalTitle = changeModal.querySelector(".modal-title");
     const defectiveCard = document.querySelector("#defective");
     const productCard = document.querySelector("#product");
+    const capitalizationSum = document.querySelector("#sum-capitalization");
 
     const modalActivity = (state) => {
         [changeModalInput, ...changeModalBtns].forEach((elem) => {
@@ -133,9 +148,44 @@ const createLogicForChangeModal = () => {
         elem.addEventListener("click", () => {
             if (i === 2) {
                 if (changeModalInput.value.replace(/\+\-/g, "").length > 0) {
-                    // modalActivity(false);
-                    // changeModalInputs[0].style.outline = "none";
-                    
+                    const productSum = document.querySelector("#sum-product");
+                    const defectiveSum = document.querySelector("#sum-defective");
+
+                    modalActivity(false);
+                    changeModalInput.style.outline = "none";
+
+                    let objResponse = {};
+                    objResponse[changeModalTitle.textContent.includes("товаре") ? "amount_in_goods" : "amount_in_defects"] = Number(changeModalInput.value);
+                    objResponse[objResponse["amount_in_defects"] ? "amount_in_goods" : "amount_in_defects"] = 
+                        objResponse["amount_in_defects"] ?
+                            parseCurrency(productSum.textContent) : 
+                            parseCurrency(defectiveSum.textContent);
+
+                    sendFetchPut(
+                        "finances/update",
+                        getCookieValue("access"),
+                        objResponse,
+                        (data) => {
+                            if (data.errors.length > 0) {
+                                alert(data.errors[0])
+                            } else {
+                                const cashSum = document.querySelector("#sum-cash");
+                                const clientsDebtsSum = document.querySelector("#sum-debts");
+
+                                productSum.textContent = change(data.data.amount_in_goods);
+                                defectiveSum.textContent = change(data.data.amount_in_defects);
+                                capitalizationSum.textContent = change(
+                                    data.data.amount_in_goods +
+                                    data.data.amount_in_defects +
+                                    parseCurrency(cashSum.textContent) +
+                                    Math.abs(parseCurrency(clientsDebtsSum.textContent))
+                                );
+
+                                modalActivity(true);
+                                closeModal();
+                            }
+                        }
+                    )
                     
                 } else {
                     changeModalInput.style.outline = "1px solid red";
