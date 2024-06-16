@@ -30,8 +30,6 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['193.168.49.68', 'avelshop.ru', 'avelshop.store', 'localhost', '0.0.0.0']
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,6 +43,7 @@ INSTALLED_APPS = [
     'core.apps.users',
     'core.apps.transactions',
     'core.apps.receipts',
+    'core.apps.finances',
     # 3rd party
     'phonenumber_field',
     'phonenumbers',
