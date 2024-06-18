@@ -156,10 +156,6 @@ const createLogicForChangeModal = () => {
 
                     let objResponse = {};
                     objResponse[changeModalTitle.textContent.includes("товаре") ? "amount_in_goods" : "amount_in_defects"] = Number(changeModalInput.value);
-                    objResponse[objResponse["amount_in_defects"] ? "amount_in_goods" : "amount_in_defects"] = 
-                        objResponse["amount_in_defects"] ?
-                            parseCurrency(productSum.textContent) : 
-                            parseCurrency(defectiveSum.textContent);
 
                     sendFetchPut(
                         "finances/update",
