@@ -29,11 +29,31 @@ class Finances(TimeStampedModel):
         verbose_name='Сумма в браке',
     )
 
+    income_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        blank=False,
+        null=False,
+        verbose_name='Сумма доходов',
+    )
+
+    debt_for_goods_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        blank=False,
+        null=False,
+        verbose_name='Сумма долга за товар',
+    )
+
     def to_entity(self) -> FinancesEntity:
         return FinancesEntity(
             id=self.pk,
             amount_in_goods=float(self.amount_in_goods),
             amount_in_defects=float(self.amount_in_defects),
+            income_amount=float(self.income_amount),
+            debt_for_goods_amount=float(self.debt_for_goods_amount),
             created_at=self.created_at,
             updated_at=self.updated_at,
         )
@@ -43,6 +63,8 @@ class Finances(TimeStampedModel):
         return cls(
             amount_in_goods=entity.amount_in_goods,
             amount_in_defects=entity.amount_in_defects,
+            income_amount=entity.income_amount,
+            debt_for_goods_amount=entity.debt_for_goods_amount,
         )
 
     class Meta:
