@@ -40,16 +40,17 @@ checkTokens().then(() => {
     const records = document.querySelector("#records");
     const noRecords = document.querySelector("#no-records");
     const MAX_LINES = 10;
+    const ids = JSON.parse(sessionStorage.getItem("transaction_id"));
 
-    const responseTotalLink = sessionStorage.getItem("transaction_type") === "Ежедневная прибыль" ?
-        `transactions/total?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true`
-        :
-        `transactions/total?is_income=false&is_current_month=true`
+    let responseTotalLink = 
+        `transactions/total?is_current_month=true&`;
+    let responseTransactionLink = 
+        `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
 
-    const responseTransactionLink = sessionStorage.getItem("transaction_type") === "Ежедневная прибыль" ?
-        `transactions/?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true&offset=0&limit=${MAX_LINES}`
-        :
-        `transactions/?is_income=false&is_current_month=true&offset=0&limit=${MAX_LINES}`
+    Array.from(ids).forEach((elem) => {
+        responseTotalLink += `types=${elem}&`;
+        responseTransactionLink += `types=${elem}&`;
+    });
 
     name.textContent = getCookieValue("username");
     sendFetchGet(

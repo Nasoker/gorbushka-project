@@ -31,6 +31,7 @@ checkTokens().then(() => {
     const linkOnlyForAdmins = document.querySelectorAll("#onlyForAdmin");
     const records = document.querySelector("#records");
     const noRecords = document.querySelector("#no-records");
+    const debtBalance = document.querySelector("#debt_balance");
 
     getCookieValue("role") === "Moderator" && linkOnlyForAdmins.forEach((elem) => elem.remove());
     const MAX_LINES = 10;
@@ -83,6 +84,17 @@ checkTokens().then(() => {
         });
     });
 
+    sendFetchGet(
+        "transactions/debts",
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                changeValue(debtBalance, data.data.total, true);
+            }
+        }
+    );
 
     const requestLink = window.location.hash === "#is_debtor" ? 
             `users/customers?&limit=${MAX_LINES}&is_debtor=true` :

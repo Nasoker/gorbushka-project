@@ -1,26 +1,24 @@
 import { sendFetchGet, sendFetchPut } from "./api.js";
-import { checkMobile, checkTokens, getCookieValue, isMobile, plugActivity } from "./functions.js";
+import { checkMobile, checkTokens, getCookieValue, isMobile, parseCurrency, plugActivity } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
-
-const parseCurrency = (str) => {
-    // Удаляем все точки и слова из строки
-    let cleanedStr = str.replace(/[^\d]/g, '');
-    // Преобразуем полученную строку в число
-    return parseInt(cleanedStr, 10);
-}
 
 const change = (value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " рублей" }
 
 checkTokens().then(() => {
     const name = document.querySelector("#username");
+    name.textContent = getCookieValue("username");
+    
     const capitalizationSum = document.querySelector("#sum-capitalization");
     const productSum = document.querySelector("#sum-product");
     const cashSum = document.querySelector("#sum-cash");
     const defectiveSum = document.querySelector("#sum-defective");
     const clientsDebtsSum = document.querySelector("#sum-debts");
     const clientsDebtsLink = document.querySelector("#link-debts");
-    const transactionTypes = ["Сумма в товаре", "Наличная сумма", "Сумма в браке"]
+    const productsDebts = document.querySelector("#product-debts");
+    const productsDebtsSum = document.querySelector("#sum-product-debts");
+
+    const transactionTypes = ["Наличная сумма"];
     let capSum = 0;
 
     sendFetchGet(
@@ -32,7 +30,6 @@ checkTokens().then(() => {
             } else {
                 let typesArr = [];
                 let transactionLink = "transactions/total?";
-                name.textContent = getCookieValue("username");
 
                 transactionTypes.forEach((type) => {
                     data.data.items.forEach((typeObj) => {
@@ -71,6 +68,8 @@ checkTokens().then(() => {
                                                 } else {
                                                     productSum.textContent = change(data.data.amount_in_goods);
                                                     defectiveSum.textContent = change(data.data.amount_in_defects);
+                                                    productsDebtsSum.textContent = change(0);
+                                                    
                                                     capSum += data.data.amount_in_goods;
                                                     capSum += data.data.amount_in_defects;
 
@@ -106,6 +105,7 @@ const createLogicForChangeModal = () => {
     const changeModalTitle = changeModal.querySelector(".modal-title");
     const defectiveCard = document.querySelector("#defective");
     const productCard = document.querySelector("#product");
+    const productsDebts = document.querySelector("#product-debts");
     const capitalizationSum = document.querySelector("#sum-capitalization");
 
     const modalActivity = (state) => {
@@ -128,7 +128,7 @@ const createLogicForChangeModal = () => {
     }
 
 
-    [defectiveCard, productCard].forEach((elem) => {
+    [defectiveCard, productCard, productsDebts].forEach((elem) => {
         elem.addEventListener("click", () => {
             const backdrop = document.querySelector(".modal-backdrop");
             const title = elem.querySelector("#card-name");
@@ -155,7 +155,12 @@ const createLogicForChangeModal = () => {
                     changeModalInput.style.outline = "none";
 
                     let objResponse = {};
-                    objResponse[changeModalTitle.textContent.includes("товаре") ? "amount_in_goods" : "amount_in_defects"] = Number(changeModalInput.value);
+                    objResponse[
+                        changeModalTitle.textContent.includes("товаре") ? 
+                            "amount_in_goods" 
+                            : 
+                            changeModalTitle.textContent.includes("товар") ? "" : "amount_in_defects"
+                        ] = Number(changeModalInput.value);
 
                     sendFetchPut(
                         "finances/update",
@@ -167,12 +172,16 @@ const createLogicForChangeModal = () => {
                             } else {
                                 const cashSum = document.querySelector("#sum-cash");
                                 const clientsDebtsSum = document.querySelector("#sum-debts");
+                                const productsDebtsSum = document.querySelector("#sum-product-debts");
 
                                 productSum.textContent = change(data.data.amount_in_goods);
                                 defectiveSum.textContent = change(data.data.amount_in_defects);
+                                productsDebtsSum.textContent = change(0);
+
                                 capitalizationSum.textContent = change(
                                     data.data.amount_in_goods +
                                     data.data.amount_in_defects +
+                                    // data.data.amount_in_defects +
                                     parseCurrency(cashSum.textContent) +
                                     Math.abs(parseCurrency(clientsDebtsSum.textContent))
                                 );

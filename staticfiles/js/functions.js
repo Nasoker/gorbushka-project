@@ -131,18 +131,27 @@ const fetchPage = (name, curPage, limit, id) => {
         case 'transactionsWithFiles':
             return `transactions/${id}?offset=${(curPage - 1) * limit}&limit=${limit}`;
         case 'transactions_types':
-            return id === "Ежедневная прибыль" ?
-                `transactions/?types=${sessionStorage.getItem("transaction_id")}&is_current_month=true&offset=${(curPage - 1) * limit}&limit=${limit}`
-                :
-                `transactions/?is_income=false&is_current_month=true&offset=${limit}&limit=${limit}`
+            const ids = JSON.parse(sessionStorage.getItem("transaction_id"));
+            let responseTransactionLink = `transactions/?is_current_month=true&offset=${(curPage - 1) * limit}&limit=${limit}&`
+        
+            Array.from(ids).forEach((elem) => {
+                responseTransactionLink += `types=${elem}&`;
+            });
+
+            return responseTransactionLink
         case 'customers':
             return window.location.hash === "#is_debtor" ?
                 `users/customers?offset=${(curPage - 1) * limit}&limit=${limit}&is_debtor=true` :
                 `users/customers?offset=${(curPage - 1) * limit}&limit=${limit}`;
-        case 'definedCustomer':
+        case 'definedCustomers':
             return window.location.hash === "#is_debtor" ?
-                `users/customers?name=${id}offset=${(curPage - 1) * limit}&limit=${limit}&is_debtor=true` :
-                `users/customers?name=${id}offset=${(curPage - 1) * limit}&limit=${limit}`;
+                id ? 
+                    `users/customers?name=${id}offset=${(curPage - 1) * limit}&limit=${limit}&is_debtor=true` :
+                    `users/customers?offset=${(curPage - 1) * limit}&limit=${limit}&is_debtor=true` 
+                :
+                id ? 
+                    `users/customers?name=${id}offset=${(curPage - 1) * limit}&limit=${limit}` :
+                    `users/customers?offset=${(curPage - 1) * limit}&limit=${limit}`
     }
 }
 
@@ -319,4 +328,11 @@ export const createPagination = (data, lines, changeFunc, fetch) => {
 export const deletePagination = () => {
     const pagination = document.querySelector(".pagination");
     Array.from(pagination.childNodes).forEach((elem) => elem.remove());
+}
+
+export const parseCurrency = (str) => {
+    // Удаляем все точки и слова из строки
+    let cleanedStr = str.replace(/[^\d]/g, '');
+    // Преобразуем полученную строку в число
+    return parseInt(cleanedStr, 10);
 }
