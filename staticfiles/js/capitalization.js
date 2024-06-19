@@ -68,10 +68,11 @@ checkTokens().then(() => {
                                                 } else {
                                                     productSum.textContent = change(data.data.amount_in_goods);
                                                     defectiveSum.textContent = change(data.data.amount_in_defects);
-                                                    productsDebtsSum.textContent = change(0);
+                                                    productsDebtsSum.textContent = change(data.data.debt_for_goods_amount);
                                                     
                                                     capSum += data.data.amount_in_goods;
                                                     capSum += data.data.amount_in_defects;
+                                                    capSum += data.data.debt_for_goods_amount;
 
                                                     capitalizationSum.textContent = change(capSum);
 
@@ -159,7 +160,7 @@ const createLogicForChangeModal = () => {
                         changeModalTitle.textContent.includes("товаре") ? 
                             "amount_in_goods" 
                             : 
-                            changeModalTitle.textContent.includes("товар") ? "" : "amount_in_defects"
+                            changeModalTitle.textContent.includes("товар") ? "debt_for_goods_amount" : "amount_in_defects"
                         ] = Number(changeModalInput.value);
 
                     sendFetchPut(
@@ -176,12 +177,12 @@ const createLogicForChangeModal = () => {
 
                                 productSum.textContent = change(data.data.amount_in_goods);
                                 defectiveSum.textContent = change(data.data.amount_in_defects);
-                                productsDebtsSum.textContent = change(0);
+                                productsDebtsSum.textContent = change(data.data.debt_for_goods_amount);
 
                                 capitalizationSum.textContent = change(
                                     data.data.amount_in_goods +
                                     data.data.amount_in_defects +
-                                    // data.data.amount_in_defects +
+                                    data.data.debt_for_goods_amount +
                                     parseCurrency(cashSum.textContent) +
                                     Math.abs(parseCurrency(clientsDebtsSum.textContent))
                                 );

@@ -3,9 +3,9 @@ import { changeValue, checkMobile, checkTokens, getCookieValue, isMobile, parseC
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
-checkTokens().then(() => {
-    const change = (value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " рублей" }
+const change = (value) => { return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " рублей" }
 
+checkTokens().then(() => {
     const name = document.querySelector("#username");
     const costs = document.querySelector("#costs");
     const costsLink = document.querySelector("#costs-link")
@@ -54,8 +54,8 @@ checkTokens().then(() => {
                                     if (data.errors.length > 0) {
                                         alert(data.errors[0])
                                     } else {
-                                        // profitSum = data.data.total;
-                                        profitSum = 0;
+                                        console.log(data)
+                                        profitSum = data.data.income_amount;
                                         profit.textContent = change(profitSum);
                                         costs.textContent = change(costsSum);
                                         netProfit.textContent = change(profitSum - costsSum);
@@ -130,7 +130,7 @@ const createLogicForChangeModal = () => {
                         "finances/update",
                         getCookieValue("access"),
                         {
-                            // "amount_in_defects" : Number(changeModalInput.value),
+                            "income_amount" : Number(changeModalInput.value),
                         },
                         (data) => {
                             if (data.errors.length > 0) {
@@ -139,11 +139,10 @@ const createLogicForChangeModal = () => {
                                 const costs = document.querySelector("#costs");
                                 const netProfit = document.querySelector("#net-profit");
                                 const profit = document.querySelector("#profit");
-                                profit.textContent = change(0)
+                                profit.textContent = change(data.data.income_amount)
 
                                 netProfit.textContent = change(
-                                    // data.data.amount_in_defects +
-                                    0
+                                    data.data.income_amount
                                     -
                                     parseCurrency(costs.textContent)
                                 );
