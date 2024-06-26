@@ -163,6 +163,13 @@ const createLogicForChangeModal = () => {
                             changeModalTitle.textContent.includes("товар") ? "debt_for_goods_amount" : "amount_in_defects"
                         ] = Number(changeModalInput.value);
 
+                    if("debt_for_goods_amount" in objResponse){
+                        objResponse["amount_in_goods"] = 
+                            parseCurrency(productCard.querySelector(".card-value").textContent) +
+                            parseCurrency(productsDebts.querySelector(".card-value").textContent) -
+                            Number(changeModalInput.value)
+                    }
+
                     sendFetchPut(
                         "finances/update",
                         getCookieValue("access"),
