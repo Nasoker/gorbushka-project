@@ -40,7 +40,7 @@ checkTokens().then(() => {
 
     const getCustomersByDefinedName = () => {
         const requestLink = window.location.hash === "#is_debtor" ? 
-            `users/customers?name=${search.value}&limit=&is_debtor=true` :
+            `users/customers?name=${search.value}&limit=${MAX_LINES}&is_debtor=true` :
             `users/customers?name=${search.value}&limit=${MAX_LINES}`
 
         sendFetchGet(
