@@ -133,7 +133,10 @@ class ORMTransactionsService(BaseTransactionsService):
             return 0
 
     def get_transaction_types(self, pagination: PaginationIn) -> Iterable[TransactionType]:
-        qs = TransactionTypeModel.objects.all()[pagination.offset:pagination.offset + pagination.limit]
+        qs = TransactionTypeModel \
+                 .objects \
+                 .order_by('-created_at') \
+                 .all()[pagination.offset:pagination.offset + pagination.limit]
         return [transaction_type.to_entity() for transaction_type in qs]
 
     def get_transaction_types_count(self) -> int:
@@ -157,8 +160,6 @@ class ORMTransactionsService(BaseTransactionsService):
 
         for key, value in fields_to_update.items():
             if key == 'transaction_type' and value is not None:
-                # TODO: what if not found ???
-                # TODO: can we only set type_id ???
                 transaction_type = TransactionTypeModel.objects.get(pk=value)
                 setattr(transaction_dto, key, transaction_type)
             elif value is not None:
@@ -186,12 +187,13 @@ class ORMTransactionsService(BaseTransactionsService):
 
     def get_debts(self) -> float:
         qs = TransactionModel \
-                 .objects \
-                 .values('customer') \
-                 .filter(Q(customer__isnull=False)) \
-                 .annotate(balance=Sum('amount')) \
-                 .filter(Q(balance__lt=0)) \
-                 .aggregate(debt=Sum('balance'))
+            .objects \
+            .order_by('-created_at') \
+            .values('customer') \
+            .filter(Q(customer__isnull=False)) \
+            .annotate(balance=Sum('amount')) \
+            .filter(Q(balance__lt=0)) \
+            .aggregate(debt=Sum('balance'))
 
         if qs['debt']:
             return qs['debt']
