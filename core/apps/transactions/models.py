@@ -108,3 +108,4 @@ class Transaction(TimeStampedModel):
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+        ordering = ['-created_at']

@@ -60,6 +60,7 @@ class ORMUsersService(BaseUsersService):
         query = self._build_users_query(filters)
         qs = UserModel \
                  .objects \
+                 .order_by('-date_joined') \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
                  .filter(query)[pagination.offset:pagination.offset + pagination.limit]
 
@@ -87,6 +88,7 @@ class ORMUsersService(BaseUsersService):
 
         qs = UserModel \
                  .objects \
+                 .order_by('-date_joined') \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
                  .annotate(balance=Sum('transaction__amount')) \
                  .filter(query) \
@@ -111,6 +113,7 @@ class ORMUsersService(BaseUsersService):
 
         qs = UserModel \
                  .objects \
+                 .order_by('-date_joined') \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
                  .filter(query)[pagination.offset:pagination.offset + pagination.limit]
 
