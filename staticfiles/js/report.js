@@ -54,11 +54,11 @@ checkTokens().then(() => {
                                     if (data.errors.length > 0) {
                                         alert(data.errors[0])
                                     } else {
-                                        console.log(data)
                                         profitSum = data.data.income_amount;
                                         profit.textContent = change(profitSum);
                                         costs.textContent = change(costsSum);
-                                        netProfit.textContent = change(profitSum - costsSum);
+                                        console.log(profitSum)
+                                        netProfit.textContent = change(profitSum - Math.abs(costsSum));
                                         
                                         plugActivity(false);
                                         isMobile && checkMobile();
