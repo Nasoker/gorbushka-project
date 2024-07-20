@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.http import HttpRequest
 from ninja import (
     Query,
@@ -19,6 +21,7 @@ from core.api.v1.transactions.filters import (
 )
 from core.api.v1.transactions.schemas import (
     CreateTransactionInSchema,
+    ProviderTotalOutSchema,
     TransactionOutSchema,
     TransactionsTotalOutSchema,
     TransactionSubtotalOutSchema,
@@ -126,6 +129,27 @@ def get_transaction_types_handler(
         offset=pagination_in.offset,
         limit=pagination_in.limit,
         total=transaction_types_count,
+    )
+
+    return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))
+
+
+@router.get('/provider_total', response=ApiResponse[ListPaginatedResponse])
+def get_procurement_data_handler(
+        request: HttpRequest,
+        pagination_in: Query[PaginationIn],
+        on_date: date | None = None,
+):
+    service: BaseTransactionsService = ORMTransactionsService()
+
+    provider_total_data = service.get_provider_total_data(on_date=on_date, pagination=pagination_in)
+    providers_count = service.get_provider_total_count(on_date=on_date)
+
+    items = [ProviderTotalOutSchema(provider=obj['provider'], total=obj['total']) for obj in provider_total_data]
+    pagination_out = PaginationOut(
+        offset=pagination_in.offset,
+        limit=pagination_in.limit,
+        total=providers_count,
     )
 
     return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination_out))

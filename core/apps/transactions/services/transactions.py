@@ -2,10 +2,14 @@ from abc import (
     ABC,
     abstractmethod,
 )
-from datetime import datetime
+from datetime import (
+    date,
+    datetime,
+)
 from typing import Iterable
 
 from django.db.models import (
+    F,
     Q,
     Sum,
 )
@@ -80,6 +84,14 @@ class BaseTransactionsService(ABC):
 
     @abstractmethod
     def get_balances_sum(self, filters: BalancesSumFilters) -> float:
+        ...
+
+    @abstractmethod
+    def get_provider_total_data(self, on_date: date, pagination: PaginationIn) -> list[dict]:
+        ...
+
+    @abstractmethod
+    def get_provider_total_count(self, on_date: date) -> int:
         ...
 
 
@@ -209,6 +221,42 @@ class ORMTransactionsService(BaseTransactionsService):
             return qs['total']
 
         return 0
+
+    def get_provider_total_data(self, on_date: date, pagination: PaginationIn) -> list[dict]:
+        query = self._build_provider_total_query(on_date)
+
+        qs = TransactionModel \
+                 .objects \
+                 .filter(query) \
+                 .annotate(provider_name=F('provider')) \
+                 .values('provider_name') \
+                 .annotate(total=Sum('amount')) \
+                 .order_by('total')[pagination.offset:pagination.offset + pagination.limit]
+
+        return [{'provider': obj['provider_name'], 'total': obj['total']} for obj in qs]
+
+    def get_provider_total_count(self, on_date: date) -> int:
+        query = self._build_provider_total_query(on_date)
+
+        return TransactionModel \
+            .objects \
+            .filter(query) \
+            .values('provider') \
+            .order_by('provider') \
+            .distinct('provider') \
+            .count()
+
+    def _build_provider_total_query(self, on_date: date) -> Q:
+        query = Q()
+
+        query &= Q(transaction_type__type='Закуп')
+
+        if on_date is None:
+            query &= Q(created_at__date=date.today())
+        else:
+            query &= Q(created_at__date=on_date)
+
+        return query
 
     def _build_transactions_query(self, filters: TransactionFilters) -> Q:
         query = Q()

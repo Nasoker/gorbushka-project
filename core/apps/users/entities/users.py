@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -16,6 +17,7 @@ class User:
 @dataclass
 class Customer(User):
     balance: float
+    last_transaction_date: datetime
 
 
 @dataclass
