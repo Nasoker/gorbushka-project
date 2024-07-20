@@ -13,7 +13,10 @@ from core.api.schemas import (
     ApiResponse,
     ListPaginatedResponse,
 )
-from core.api.v1.transactions.filters import TransactionFilters
+from core.api.v1.transactions.filters import (
+    BalancesSumFilters,
+    TransactionFilters,
+)
 from core.api.v1.transactions.schemas import (
     CreateTransactionInSchema,
     TransactionOutSchema,
@@ -82,15 +85,15 @@ def create_transaction_handler(
     return ApiResponse(data=TransactionOutSchema.from_entity(saved_transaction))
 
 
-@router.get('/debts', response=ApiResponse[TransactionsTotalOutSchema])
-def get_debts_handler(
+@router.get('/balances_sum', response=ApiResponse[TransactionsTotalOutSchema])
+def get_balances_sum_handler(
         request: HttpRequest,
-) -> ApiResponse[TransactionsTotalOutSchema]:
+        filters: Query[BalancesSumFilters],
+):
     service: BaseTransactionsService = ORMTransactionsService()
+    balances_sum = service.get_balances_sum(filters)
 
-    debts = service.get_debts()
-
-    return ApiResponse(data=TransactionsTotalOutSchema(total=debts))
+    return ApiResponse(data=TransactionsTotalOutSchema(total=balances_sum))
 
 
 @router.get('/total', response=ApiResponse[TransactionsTotalOutSchema])
