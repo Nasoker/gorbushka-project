@@ -73,3 +73,8 @@ class UpdateTransactionInSchema(BaseModel):
     provider: str | None = None
     amount: float | None = None
     comment: str | None = None
+
+
+class ProviderTotalOutSchema(BaseModel):
+    provider: str | None = None
+    total: float

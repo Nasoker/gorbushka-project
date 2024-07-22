@@ -39,7 +39,7 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'transaction_type',
-        'amount',
+        'colored_amount',
         'comment',
         'customer',
         'provider',
