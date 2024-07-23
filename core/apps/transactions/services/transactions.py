@@ -276,4 +276,7 @@ class ORMTransactionsService(BaseTransactionsService):
             query &= Q(created_at__month=today.month)
             query &= Q(created_at__year=today.year)
 
+        if filters.is_today:
+            query &= Q(created_at__date=date.today())
+
         return query

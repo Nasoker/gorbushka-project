@@ -4,6 +4,29 @@ from core.apps.common.models import TimeStampedModel
 from core.apps.finances.entities.finances import Finances as FinancesEntity
 
 
+class Cash(TimeStampedModel):
+    """Used to store data about Cash."""
+
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        blank=False,
+        null=False,
+        verbose_name='Сумма',
+    )
+
+    comment = models.TextField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name='Примечание',
+    )
+
+    class Meta:
+        verbose_name = 'Кеш в обороте'
+        verbose_name_plural = 'Кеш в обороте'
+
+
 class Finances(TimeStampedModel):
     """Used to store other finance data.
 

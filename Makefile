@@ -51,3 +51,7 @@ superuser:
 .PHONY: collect-static
 collect-static:
 	${EXEC} ${APP_CONTAINER} ${MANAGE_PY} collectstatic
+
+.PHONY: clear-income-amount
+clear-income-amount:
+	${EXEC} ${APP_CONTAINER} ${MANAGE_PY} clear_income_amount
