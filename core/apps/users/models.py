@@ -101,6 +101,7 @@ class User(AbstractUser):
             telegram=self.telegram,
             role=self.role,
             balance=balance,
+            last_transaction_date=self.last_transaction_date,
         )
 
     def to_employee_entity(self) -> EmployeeEntity:

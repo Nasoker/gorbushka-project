@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 
 from core.apps.common.models import TimeStampedModel
 from core.apps.transactions.entities.transactions import (
@@ -81,6 +82,18 @@ class Transaction(TimeStampedModel):
         null=True,
         verbose_name='Примечание',
     )
+
+    def colored_amount(self):
+        color_code = '#77DD77' if self.amount > 0 else '#ff6961'
+
+        return format_html(
+            '<span style="color:{0};">{1}</span>',
+            color_code,
+            self.amount,
+        )
+
+    colored_amount.allow_tags = True
+    colored_amount.short_description = 'Сумма операции'
 
     def to_entity(self) -> TransactionEntity:
         return TransactionEntity(

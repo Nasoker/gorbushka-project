@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 from core.apps.users.entities.users import (
@@ -33,6 +35,7 @@ class UserOutSchema(BaseModel):
 
 class CustomerOutSchema(UserOutSchema):
     balance: float
+    last_transaction_date: datetime | None = None
 
     @staticmethod
     def from_entity(entity: Customer) -> 'CustomerOutSchema':
@@ -46,6 +49,7 @@ class CustomerOutSchema(UserOutSchema):
             telegram=entity.telegram,
             role=entity.role,
             balance=entity.balance,
+            last_transaction_date=entity.last_transaction_date,
         )
 
 

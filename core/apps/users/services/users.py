@@ -5,6 +5,7 @@ from abc import (
 from typing import Iterable
 
 from django.db.models import (
+    Max,
     Q,
     Sum,
     Value,
@@ -91,6 +92,7 @@ class ORMUsersService(BaseUsersService):
                  .order_by('-date_joined') \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
                  .annotate(balance=Sum('transaction__amount')) \
+                 .annotate(last_transaction_date=Max('transaction__created_at')) \
                  .filter(query) \
                  .select_related()[pagination.offset:pagination.offset + pagination.limit]
 
