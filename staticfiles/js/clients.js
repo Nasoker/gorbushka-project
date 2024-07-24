@@ -5,7 +5,7 @@ import { checkTokens, getCookieValue, createPagination, changeValue, plugActivit
 
 const changeLine = (node, value) => {
     const children = Array.from(node.children);
-    const keys = ["name", "telegram", "phone", "balance"];
+    const keys = ["name", "telegram", "phone", "last_transaction_date", "balance"];
     node.id = value.id;
 
     children.forEach((elem, i) => {
@@ -19,6 +19,30 @@ const changeLine = (node, value) => {
             elem.textContent = `@${value.telegram}`;
         } else if (keys[i] === "phone") {
             elem.textContent = value.phone;
+        } else if (keys[i] === "last_transaction_date") {
+            if (value.last_transaction_date) {
+                const date = new Date(value.last_transaction_date);
+
+                const day = String(date.getUTCDate()).padStart(2, '0');
+                const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+                const year = date.getUTCFullYear();
+
+                elem.textContent = `${day}.${month}.${year}`;
+
+                if (window.location.hash === "#is_debtor") {
+                    // Текущая дата
+                    const currentDate = new Date();
+                    const differenceInTime = Math.abs(date - currentDate); // Разница во времени в миллисекундах
+                    const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24); // Конвертация в дни
+
+                    node.style.backgroundColor = differenceInDays >= 5 ? "orange" : "white";
+                } else {
+                    node.style.backgroundColor = "white";
+                }
+            } else {
+                elem.textContent = "Транзакций нет";
+                node.style.backgroundColor = "white";
+            }
         }
     })
 }
@@ -39,7 +63,7 @@ checkTokens().then(() => {
     name.textContent = getCookieValue("username");
 
     const getCustomersByDefinedName = () => {
-        const requestLink = window.location.hash === "#is_debtor" ? 
+        const requestLink = window.location.hash === "#is_debtor" ?
             `users/customers?name=${search.value}&limit=${MAX_LINES}&is_debtor=true` :
             `users/customers?name=${search.value}&limit=${MAX_LINES}`
 
@@ -65,7 +89,7 @@ checkTokens().then(() => {
                                 changeLine(lines[i], data.data.items[i]);
                             }
                         }
-                        
+
                         data.id = search.value;
 
                         deletePagination();
@@ -85,7 +109,7 @@ checkTokens().then(() => {
     });
 
     sendFetchGet(
-        "transactions/debts",
+        "transactions/balances_sum?positive=false",
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -96,9 +120,9 @@ checkTokens().then(() => {
         }
     );
 
-    const requestLink = window.location.hash === "#is_debtor" ? 
-            `users/customers?&limit=${MAX_LINES}&is_debtor=true` :
-            `users/customers?&limit=${MAX_LINES}`
+    const requestLink = window.location.hash === "#is_debtor" ?
+        `users/customers?&limit=${MAX_LINES}&is_debtor=true` :
+        `users/customers?&limit=${MAX_LINES}`
 
     sendFetchGet(
         requestLink,

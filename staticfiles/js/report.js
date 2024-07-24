@@ -34,7 +34,7 @@ checkTokens().then(() => {
                         }
                     })
                 });
-                transactionLink+="is_current_month=true"
+                transactionLink+="is_today=true"
 
                 sessionStorage.setItem("transaction_id", JSON.stringify(typesArr));
 
@@ -57,7 +57,7 @@ checkTokens().then(() => {
                                         profitSum = data.data.income_amount;
                                         profit.textContent = change(profitSum);
                                         costs.textContent = change(costsSum);
-                                        console.log(profitSum)
+
                                         netProfit.textContent = change(profitSum - Math.abs(costsSum));
                                         
                                         plugActivity(false);

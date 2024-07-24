@@ -43,9 +43,9 @@ checkTokens().then(() => {
     const ids = JSON.parse(sessionStorage.getItem("transaction_id"));
 
     let responseTotalLink = 
-        `transactions/total?is_current_month=true&`;
+        `transactions/total?is_today=true&`;
     let responseTransactionLink = 
-        `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
+        `transactions/?is_today=true&offset=0&limit=${MAX_LINES}&`
 
     Array.from(ids).forEach((elem) => {
         responseTotalLink += `types=${elem}&`;
