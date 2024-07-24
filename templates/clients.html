@@ -52,7 +52,6 @@
         display: block;
     }
 
-
     .row-no-records {
         display: none;
         justify-content: center;
@@ -102,6 +101,8 @@
                                 class="fas fa-chart-bar"></i><span>Отчетность</span></a></li>
                     <li class="nav-item" id="onlyForAdmin"><a class="nav-link" href="{% url 'salary' %}"><i
                                 class="fas fa-coins"></i><span>Зарплатная ведомость</span></a></li>
+                    <li class="nav-item" id="onlyForAdmin"><a class="nav-link" href="{% url 'purchase' %}">
+                            <i class="far fa-money-bill-alt"></i><span>Закупка</span></a></li>
                 </ul>
             </div>
         </nav>
@@ -159,6 +160,7 @@
                                                         <th class="text-center">Имя клиента</th>
                                                         <th class="text-center">Логин телеграма</th>
                                                         <th class="text-center">Номер телефона</th>
+                                                        <th class="text-center">Дата последней транзакции</th>
                                                         <th class="text-center">Баланс</th>
                                                     </tr>
                                                 </thead>
@@ -168,20 +170,10 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
@@ -192,20 +184,10 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                        <td class="text-center"></td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
@@ -216,8 +198,38 @@
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center"></td>
                                                     </tr>
                                                     <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>

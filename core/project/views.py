@@ -20,6 +20,8 @@ def login(request):
 def orders(request):
     return render(request, 'orders.html')
 
+def purchase(request):
+    return render(request, 'purchase.html')
 
 def report(request):
     return render(request, 'report.html')

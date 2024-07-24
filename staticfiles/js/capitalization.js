@@ -15,7 +15,7 @@ checkTokens().then(() => {
     const defectiveSum = document.querySelector("#sum-defective");
     const clientsDebtsSum = document.querySelector("#sum-debts");
     const clientsDebtsLink = document.querySelector("#link-debts");
-    const productsDebts = document.querySelector("#product-debts");
+    const clientsSum = document.querySelector("#clients-balances");
     const productsDebtsSum = document.querySelector("#sum-product-debts");
 
     const transactionTypes = ["Наличная сумма"];
@@ -50,7 +50,7 @@ checkTokens().then(() => {
                             capSum += data.data.total;
 
                             sendFetchGet(
-                                "transactions/debts",
+                                "transactions/balances_sum?positive=false",
                                 getCookieValue("access"),
                                 (data) => {
                                     if (data.errors.length > 0) {
@@ -60,25 +60,38 @@ checkTokens().then(() => {
                                         capSum += Math.abs(data.data.total);
 
                                         sendFetchGet(
-                                            "finances/",
+                                            "transactions/balances_sum?positive=true",
                                             getCookieValue("access"),
                                             (data) => {
                                                 if (data.errors.length > 0) {
                                                     alert(data.errors[0])
                                                 } else {
-                                                    productSum.textContent = change(data.data.amount_in_goods);
-                                                    defectiveSum.textContent = change(data.data.amount_in_defects);
-                                                    productsDebtsSum.textContent = change(data.data.debt_for_goods_amount);
-                                                    
-                                                    capSum += data.data.amount_in_goods;
-                                                    capSum += data.data.amount_in_defects;
-                                                    capSum += data.data.debt_for_goods_amount;
+                                                    clientsSum.textContent = change(data.data.total);
+                                                    capSum -= Math.abs(data.data.total);
 
-                                                    capitalizationSum.textContent = change(capSum);
-
-                                                    plugActivity(false);
-                                                    isMobile && checkMobile();
-                                                }
+                                                    sendFetchGet(
+                                                        "finances/",
+                                                        getCookieValue("access"),
+                                                        (data) => {
+                                                            if (data.errors.length > 0) {
+                                                                alert(data.errors[0])
+                                                            } else {
+                                                                productSum.textContent = change(data.data.amount_in_goods);
+                                                                defectiveSum.textContent = change(data.data.amount_in_defects);
+                                                                productsDebtsSum.textContent = change(data.data.debt_for_goods_amount);
+                                                                
+                                                                capSum += data.data.amount_in_goods;
+                                                                capSum += data.data.amount_in_defects;
+                                                                capSum += data.data.debt_for_goods_amount;  
+            
+                                                                capitalizationSum.textContent = change(capSum);
+            
+                                                                plugActivity(false);
+                                                                isMobile && checkMobile();
+                                                            }
+                                                        }
+                                                    )
+                                                }   
                                             }
                                         )
                                     }
@@ -107,6 +120,7 @@ const createLogicForChangeModal = () => {
     const defectiveCard = document.querySelector("#defective");
     const productCard = document.querySelector("#product");
     const productsDebts = document.querySelector("#product-debts");
+    const clientsSum = document.querySelector("#clients-balances");
     const capitalizationSum = document.querySelector("#sum-capitalization");
 
     const modalActivity = (state) => {
@@ -191,7 +205,8 @@ const createLogicForChangeModal = () => {
                                     data.data.amount_in_defects +
                                     data.data.debt_for_goods_amount +
                                     parseCurrency(cashSum.textContent) +
-                                    Math.abs(parseCurrency(clientsDebtsSum.textContent))
+                                    Math.abs(parseCurrency(clientsDebtsSum.textContent)) -
+                                    parseCurrency(clientsSum.textContent)
                                 );
 
                                 modalActivity(true);
