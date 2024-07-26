@@ -27,6 +27,12 @@ checkTokens().then(() => {
 
     const MAX_LINES = 30;
     let day = new Date().toISOString().split('T')[0];
+
+    lines.forEach((elem) => {
+        elem.addEventListener("click", () => {
+            elem.classList.toggle("checked_client");
+        })
+    })
     
     name.textContent = getCookieValue("username");
     purchaseDate.max = day;
@@ -60,6 +66,7 @@ checkTokens().then(() => {
                                 })
 
                                 lines[i].style.display = "table-row";
+                                lines[i].classList.remove("checked_client");    
                                 changeLine(lines[i], transactions[i]);
                             }
                         }
