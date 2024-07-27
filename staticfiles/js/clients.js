@@ -35,13 +35,13 @@ const changeLine = (node, value) => {
                     const differenceInTime = Math.abs(date - currentDate); // Разница во времени в миллисекундах
                     const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24); // Конвертация в дни
 
-                    node.style.backgroundColor = differenceInDays >= 5 ? "orange" : "white";
+                    node.classList[differenceInDays >= 5 ? "add" : "remove"]("big_debtor");
                 } else {
-                    node.style.backgroundColor = "white";
+                    node.classList.remove("big_debtor");
                 }
             } else {
                 elem.textContent = "Транзакций нет";
-                node.style.backgroundColor = "white";
+                node.classList.remove("big_debtor");
             }
         }
     })
