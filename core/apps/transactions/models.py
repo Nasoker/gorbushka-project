@@ -89,7 +89,7 @@ class Transaction(TimeStampedModel):
         return format_html(
             '<span style="color:{0};">{1}</span>',
             color_code,
-            self.amount,
+            f'{self.amount:,}',
         )
 
     colored_amount.allow_tags = True

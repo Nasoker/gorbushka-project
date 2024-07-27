@@ -8,7 +8,7 @@ from .models import (
 
 
 @admin.register(TransactionType)
-class TransactionType(admin.ModelAdmin):
+class TransactionTypeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'type',
@@ -50,7 +50,8 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display_links = ('transaction_type',)
 
     def get_amount_sum(self):
-        return Transaction.objects.aggregate(amount_sum=Sum('amount'))['amount_sum']
+        amount_sum = Transaction.objects.aggregate(amount_sum=Sum('amount'))['amount_sum']
+        return f'{amount_sum:,}' if amount_sum is not None else 0
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
