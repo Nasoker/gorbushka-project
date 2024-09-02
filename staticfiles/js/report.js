@@ -12,7 +12,7 @@ checkTokens().then(() => {
     const netProfit = document.querySelector("#net-profit");
     const profit = document.querySelector("#profit");
     let costsSum, profitSum;
-    const transactionTypes = ["Непредвиденные расходы", "Заработная плата", "Доставка", "Парковка", "Аутсорс", "Аренда", "Хоз/Канц Товары"]
+    const transactionTypes = ["Непредвиденные расходы", "Заработная плата", "Доставка", "Парковка", "Аутсорс", "Аренда", "Хоз/Канц Товары", "Грава"]
     
     name.textContent = getCookieValue("username");
 
@@ -37,6 +37,7 @@ checkTokens().then(() => {
                 transactionLink+="is_today=true"
 
                 sessionStorage.setItem("transaction_id", JSON.stringify(typesArr));
+                sessionStorage.setItem("transaction_names", JSON.stringify(transactionTypes));
 
                 sendFetchGet(
                     transactionLink,
