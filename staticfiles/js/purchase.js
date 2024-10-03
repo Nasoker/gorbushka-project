@@ -27,7 +27,7 @@ checkTokens().then(() => {
     const purchaseDate = document.querySelector("#purchase-date");
     const totalPurchases = document.querySelector("#total-purchase");
 
-    const MAX_LINES = 30;
+    const MAX_LINES = 100;
     let day = new Date().toISOString().split('T')[0];
 
     lines.forEach((elem) => {
