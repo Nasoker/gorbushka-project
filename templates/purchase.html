@@ -135,6 +135,7 @@
                                 <div>
                                     <label class="text-muted mb-2 text-xxl-start" for="purchase-date">Закупки за дату:</label>
                                     <input type="date" min="2024-06-16" id="purchase-date" name="purchase-date">
+                                    <button class="btn btn-primary text-center add-operation" type="button">Добавить закупку</button>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -577,17 +578,17 @@
                 </div>
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-        <div class="modal fade" role="dialog" tabindex="-1" id="change-operation-modal">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" role="dialog" tabindex="-1" id="add-operation-modal">
+            <div class="modal-dialog" role="document">x
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title"
                             style="/*--bs-body-bg: var(--bs-primary-text-emphasis);*//*--bs-body-color: var(--bs-primary-text-emphasis);*/">
-                            Изменить Комментарий</h4><button class="btn-close" type="button"
-                            aria-label="Close"></button>
+                            Добавить операцию</h4><button class="btn-close" type="button" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <input type="text" class="modal-input-text" placeholder="Комментарий">
+                    <div class="modal-body" style="display: flex;align-items: center;justify-content: space-between;">
+                        <input type="number" class="modal-input-text" style="width: 45%;" placeholder="Сумма операции">
+                        <input type="text" class="modal-input-text" style="width: 45%;" placeholder="Поставщик">
                     </div>
                     <div class="modal-footer"><button class="btn btn-light" type="button">Закрыть</button><button
                             class="btn btn-primary" type="button">Сохранить</button></div>

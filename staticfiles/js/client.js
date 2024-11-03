@@ -240,10 +240,10 @@ const createLogicForAddModal = (id, fetch) => {
     const addOperationOpenModal = document.querySelector(".add-operation");
 
     const modalActivity = (state) => {
-        [...addOperationModalInputs, ...addOperationModalBtns].forEach((elem) => {
+        [...addOperationModalInputs, ...addOperationModalBtns].forEach((elem, i) => {
             elem.style.opacity = state ? 1 : 0.5;
             elem.style.pointerEvents = state ? "auto" : "none";
-            elem.tabIndex = -1;
+            elem.tabIndex = state ? i+1 : -1;
         })
     }
 
@@ -266,7 +266,7 @@ const createLogicForAddModal = (id, fetch) => {
         backdrop.classList.add("show");
         addOperationModal.classList.add("show");
         addOperationModal.style.display = "block";
-
+        addOperationModalInputs[0].focus();
     })
 
     addOperationModalBtns.forEach((elem, i) => {
@@ -292,7 +292,6 @@ const createLogicForAddModal = (id, fetch) => {
                                 fetch(
                                     false,
                                     () => {
-                                        alert(`Создана операция на сумму : ${Number(addOperationModalInputs[0].value)} рублей.`)
                                         closeModal();
                                         modalActivity(true);
                                     }
@@ -307,6 +306,41 @@ const createLogicForAddModal = (id, fetch) => {
                 closeModal();
             }
         })
+    })
+
+    document.addEventListener("keypress", () => {
+        if (event.key === "Enter" && addOperationModal.classList.contains("show")) { 
+            if (addOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
+                modalActivity(false);
+                addOperationModalInputs[0].style.outline = "none";
+
+                sendFetchPostWithAccess(
+                    `transactions/`,
+                    getCookieValue("access"),
+                    {
+                        "transaction_type_id": Number(addOperationModalInputs[0].value) >= 0 ? plusBalance : minusBalance,
+                        "customer_id": id,
+                        "amount": Number(addOperationModalInputs[0].value),
+                        "comment": addOperationModalInputs[1].value
+                    },
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else {
+                            fetch(
+                                false,
+                                () => {
+                                    closeModal();
+                                    modalActivity(true);
+                                }
+                            )
+                        }
+                    }
+                )
+            } else {
+                addOperationModalInputs[0].style.outline = "1px solid red";
+            }
+        }
     })
 }
 
