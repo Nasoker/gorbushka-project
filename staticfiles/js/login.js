@@ -33,7 +33,7 @@ if(getCookieValue("role") && getCookieValue("refresh")){
                 return
             } else {
                 document.cookie = `access=${data.access}; path=/; max-age=3600`;
-                document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24}`;
+                document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24 * 3}`;
                 window.location = getCookieValue("role") === "Customer" ? `${window.location.origin}/orders` : `${window.location.origin}/clients`;
             }
         }
@@ -62,7 +62,7 @@ loginBtn.addEventListener("click", () => {
                 } else {
                     const parsedToken = parseJwt(data.access);
                     document.cookie = `access=${data.access}; path=/; max-age=3600`;
-                    document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24}`;
+                    document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24 * 3}`;
                     document.cookie = `id=${parsedToken.user_id}; path=/;`;
                     
                     sendFetchGet(

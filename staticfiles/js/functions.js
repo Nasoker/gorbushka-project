@@ -56,7 +56,7 @@ export const checkTokens = async () => {
                 return;
             } else {
                 document.cookie = `access=${data.access}; path=/; max-age=3600`;
-                document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24}`;
+                document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24 * 3}`;
             }
         } catch (error) {
             console.error("Ошибка при запросе обновления токенов:", error);
