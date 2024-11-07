@@ -3,9 +3,20 @@ import { checkTokens, getCookieValue, createPagination, changeValue, plugActivit
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
+let minusBalance, debtBalance;
+
+function getCurrentDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Месяцы в JavaScript начинаются с 0
+    const year = today.getFullYear();
+
+    return `${day}.${month}.${year}`;
+}
+
 const changeLine = (node, value) => {
     const children = Array.from(node.children);
-    const keys = ["name", "telegram", "phone", "last_transaction_date", "balance"];
+    const keys = ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
     node.id = value.id;
 
     children.forEach((elem, i) => {
@@ -55,7 +66,7 @@ checkTokens().then(() => {
     const linkOnlyForAdmins = document.querySelectorAll("#onlyForAdmin");
     const records = document.querySelector("#records");
     const noRecords = document.querySelector("#no-records");
-    const debtBalance = document.querySelector("#debt_balance");
+    debtBalance = document.querySelector("#debt_balance");
 
     getCookieValue("role") === "Moderator" && linkOnlyForAdmins.forEach((elem) => elem.remove());
     const MAX_LINES = 10;
@@ -102,9 +113,11 @@ checkTokens().then(() => {
 
     lines.forEach((elem) => {
         elem.addEventListener("click", (e) => {
-            e.preventDefault();
-            sessionStorage.setItem("client_id", elem.id);
-            window.location = `${window.location.origin}/client`;
+            if(!e.target.classList.contains("btn")){
+                e.preventDefault();
+                sessionStorage.setItem("client_id", elem.id);
+                window.location = `${window.location.origin}/client`;
+            }
         });
     });
 
@@ -119,6 +132,18 @@ checkTokens().then(() => {
             }
         }
     );
+
+    sendFetchGet(
+        `transactions/transaction_types?offset=0&limit=100`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                minusBalance = data.data.items.find((elem) => elem.type === "Снятие с баланса").id;
+            }
+        }
+    )
 
     const requestLink = window.location.hash === "#is_debtor" ?
         `users/customers?&limit=${MAX_LINES}&is_debtor=true` :
@@ -164,5 +189,146 @@ checkTokens().then(() => {
 
     searchButton.addEventListener("click", () => {
         getCustomersByDefinedName();
-    })
+    });
+
+    createLogicForAddModal();
 });
+
+const createLogicForAddModal = () => {
+    const addOperationModal = document.querySelector("#add-operation-modal");
+    const addOperationModalInputs = addOperationModal.querySelectorAll(".modal-input-text");
+    const addOperationModalBtns = addOperationModal.querySelectorAll("button");
+    const addOperationOpenModal = document.querySelectorAll("#add-operation");
+
+    let id, balanceNode, transactionDateNode,
+    date = getCurrentDate();
+
+    const modalActivity = (state) => {
+        [...addOperationModalInputs, ...addOperationModalBtns].forEach((elem, i) => {
+            elem.style.opacity = state ? 1 : 0.5;
+            elem.style.pointerEvents = state ? "auto" : "none";
+            elem.tabIndex = state ? i+1 : -1;
+        })
+    }
+
+    const closeModal = () => {
+        const backdrop = document.querySelector(".modal-backdrop");
+
+        addOperationModalInputs.forEach((elem) => elem.value = "");
+        addOperationModalInputs[0].style.outline = "none";
+        addOperationModal.classList.remove("show");
+        addOperationModal.style.display = "none";
+        backdrop.classList.remove("show");
+        backdrop.style.zIndex = -1;
+    }
+
+
+    addOperationOpenModal.forEach((elem) => {
+        elem.addEventListener("click", () => {
+            const backdrop = document.querySelector(".modal-backdrop");
+
+            id = Number(elem.parentElement.parentElement.id);
+            balanceNode = elem.parentElement.parentElement.children[5];
+            transactionDateNode = elem.parentElement.parentElement.children[3];
+
+            backdrop.style.zIndex = 2;
+            backdrop.classList.add("show");
+            addOperationModal.classList.add("show");
+            addOperationModal.style.display = "block";
+            addOperationModalInputs[0].focus();
+        })
+    })
+
+    addOperationModalBtns.forEach((elem, i) => {
+        elem.addEventListener("click", () => {
+            if (i === 2) {
+                if (addOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
+                    modalActivity(false);
+                    addOperationModalInputs[0].style.outline = "none";
+
+                    sendFetchPostWithAccess(
+                        `transactions/`,
+                        getCookieValue("access"),
+                        {
+                            "transaction_type_id": minusBalance,
+                            "customer_id": id,
+                            "amount": -Number(addOperationModalInputs[0].value),
+                            "comment": addOperationModalInputs[1].value
+                        },
+                        (data) => {
+                            if (data.errors.length > 0) {
+                                alert(data.errors[0])
+                            } else {
+                                sendFetchGet(
+                                    `users/${id}/balance`,
+                                    getCookieValue("access"),
+                                    (data) => {
+                                        if (data.errors.length > 0) {
+                                            alert(data.errors[0])
+                                        } else {
+                                            changeValue(balanceNode, data.data.balance, true);
+                                            transactionDateNode.textContent = date;
+                                            closeModal();
+                                            modalActivity(true);
+                                        }
+                                    }
+                                )
+
+                                sendFetchGet(
+                                    "transactions/balances_sum?positive=false",
+                                    getCookieValue("access"),
+                                    (data) => {
+                                        if (data.errors.length > 0) {
+                                            alert(data.errors[0])
+                                        } else {
+                                            changeValue(debtBalance, data.data.total, true);
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    )
+                } else {
+                    addOperationModalInputs[0].style.outline = "1px solid red";
+                }
+            } else {
+                closeModal();
+            }
+        })
+    })
+
+    document.addEventListener("keypress", () => {
+        if (event.key === "Enter" && addOperationModal.classList.contains("show")) { 
+            if (addOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
+                modalActivity(false);
+                addOperationModalInputs[0].style.outline = "none";
+
+                sendFetchPostWithAccess(
+                    `transactions/`,
+                    getCookieValue("access"),
+                    {
+                        "transaction_type_id": Number(addOperationModalInputs[0].value) >= 0 ? plusBalance : minusBalance,
+                        "customer_id": id,
+                        "amount": Number(addOperationModalInputs[0].value),
+                        "comment": addOperationModalInputs[1].value
+                    },
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else {
+                            fetch(
+                                false,
+                                () => {
+                                    closeModal();
+                                    modalActivity(true);
+                                }
+                            )
+                        }
+                    }
+                )
+            } else {
+                addOperationModalInputs[0].style.outline = "1px solid red";
+            }
+        }
+    })
+}
