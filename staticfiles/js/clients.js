@@ -266,7 +266,7 @@ const createLogicForAddModal = () => {
                                         if (data.errors.length > 0) {
                                             alert(data.errors[0])
                                         } else {
-                                            changeValue(balanceNode, data.data.balance, true);
+                                            changeValue(balanceNode, data.data.balance);
                                             transactionDateNode.textContent = date;
                                             closeModal();
                                             modalActivity(true);
@@ -307,22 +307,41 @@ const createLogicForAddModal = () => {
                     `transactions/`,
                     getCookieValue("access"),
                     {
-                        "transaction_type_id": Number(addOperationModalInputs[0].value) >= 0 ? plusBalance : minusBalance,
+                        "transaction_type_id": minusBalance,
                         "customer_id": id,
-                        "amount": Number(addOperationModalInputs[0].value),
+                        "amount": -Number(addOperationModalInputs[0].value),
                         "comment": addOperationModalInputs[1].value
                     },
                     (data) => {
                         if (data.errors.length > 0) {
                             alert(data.errors[0])
                         } else {
-                            fetch(
-                                false,
-                                () => {
-                                    closeModal();
-                                    modalActivity(true);
+                            sendFetchGet(
+                                `users/${id}/balance`,
+                                getCookieValue("access"),
+                                (data) => {
+                                    if (data.errors.length > 0) {
+                                        alert(data.errors[0])
+                                    } else {
+                                        changeValue(balanceNode, data.data.balance);
+                                        transactionDateNode.textContent = date;
+                                        closeModal();
+                                        modalActivity(true);
+                                    }
                                 }
                             )
+
+                            sendFetchGet(
+                                "transactions/balances_sum?positive=false",
+                                getCookieValue("access"),
+                                (data) => {
+                                    if (data.errors.length > 0) {
+                                        alert(data.errors[0])
+                                    } else {
+                                        changeValue(debtBalance, data.data.total, true);
+                                    }
+                                }
+                            );
                         }
                     }
                 )
