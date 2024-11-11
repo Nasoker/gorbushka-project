@@ -3,7 +3,7 @@ import { checkTokens, getCookieValue, createPagination, changeValue, plugActivit
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
-let minusBalance, debtBalance;
+let minusBalance, debtBalance, role = getCookieValue("role") === "Moderator"
 
 function getCurrentDate() {
     const today = new Date();
@@ -16,7 +16,7 @@ function getCurrentDate() {
 
 const changeLine = (node, value) => {
     const children = Array.from(node.children);
-    const keys = ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
+    const keys = role ? ["name", "telegram", "phone", "last_transaction_date", "balance"] : ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
     node.id = value.id;
 
     children.forEach((elem, i) => {
@@ -191,7 +191,7 @@ checkTokens().then(() => {
         getCustomersByDefinedName();
     });
 
-    createLogicForAddModal();
+    !role && createLogicForAddModal();
 });
 
 const createLogicForAddModal = () => {
