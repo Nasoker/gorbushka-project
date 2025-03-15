@@ -1,4 +1,4 @@
-import { sendFetchGet, sendFetchPut } from "./api.js";
+import { sendFetchGet, sendFetchPut, SITE } from "./api.js";
 import { checkMobile, checkTokens, getCookieValue, isMobile, parseCurrency, parseJwt, plugActivity } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
@@ -15,8 +15,53 @@ checkTokens().then(async () => {
     const clientsDebtsLink = document.querySelector("#link-debts");
     const clientsSum = document.querySelector("#clients-balances");
     const productsDebtsSum = document.querySelector("#sum-product-debts");
+    const avelDividends = document.querySelector("#avel-dividends");
+    const moneyInTezer = document.querySelector("#money-in-tezer");
 
     const parsedToken = parseJwt(getCookieValue("access"));
+
+    await sendFetchGet(
+        `users/${parsedToken.user_id}`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                if(data.data.role === "Customer"){
+                    window.location = `${window.location.origin}/orders`;
+                } else if(data.data.role !== "Admin"){
+                    window.location = `${window.location.origin}/clients`;
+                }
+
+                name.textContent = data.data.username;
+            }
+        }
+    )
+    // Деньги в тезере
+    await sendFetchGet(
+        `users/${SITE.includes("localhost") ? 2 : 37}/balance`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                moneyInTezer.textContent = change(data.data.balance);
+            }
+        }
+    )
+
+    // Дивиденды Авель
+    await sendFetchGet(
+        `users/${SITE.includes("localhost") ? 3 : 125}/balance`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                avelDividends.textContent = change(data.data.balance);
+            }
+        }
+    )
 
     await sendFetchGet(
         `users/${parsedToken.user_id}`,

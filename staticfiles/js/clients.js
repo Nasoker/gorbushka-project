@@ -83,8 +83,6 @@ checkTokens().then(async () => {
                     window.location = `${window.location.origin}/orders`;
                 } else if(role !== "Admin"){
                     linkOnlyForAdmins.forEach((elem) => elem.remove());
-                } else {
-                    createLogicForAddModal();
                 }
 
                 name.textContent = data.data.username;
@@ -211,6 +209,8 @@ checkTokens().then(async () => {
     searchButton.addEventListener("click", () => {
         getCustomersByDefinedName();
     });
+
+    role === "Admin" && createLogicForAddModal();
 });
 
 const createLogicForAddModal = () => {
