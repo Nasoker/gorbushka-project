@@ -29,7 +29,6 @@ export const getCookieValue = (name) => {
 }
 
 export const checkTokens = async () => {
-    checkRole();
     checkExit();
 
     if (!getCookieValue("refresh")) {
@@ -67,32 +66,12 @@ export const checkTokens = async () => {
     }
 }
 
-const checkRole = () => {
-    const location = window.location.pathname;
-    const role = getCookieValue("role");
-
-    if (role === "Customer") {
-        if (!location.includes("orders")) {
-            window.location = `${window.location.origin}/orders`
-        }
-    } else if (role === "Moderator") {
-        if (!location.includes("client")) {
-            window.location = `${window.location.origin}/clients`
-        }
-    }
-}
-
 const checkExit = () => {
     const logoutBtn = document.querySelector("#logout");
 
     logoutBtn.addEventListener("click", () => {
         document.cookie = `access=; path=/; expires=-1`;
         document.cookie = `refresh=; path=/; expires=-1`;
-        document.cookie = `id=; path=/; expires=-1`;
-        document.cookie = `username=; path=/; expires=-1`;
-        document.cookie = `role=; path=/ expires=-1;`;
-        document.cookie = `phone=; path=/; expires=-1`;
-        document.cookie = `telegram=; path=/; expires=-1`;
     });
 }
 

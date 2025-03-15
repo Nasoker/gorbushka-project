@@ -1,5 +1,5 @@
 import { SITE, sendFetchGet, sendFetchPostWithAccess } from "./api.js";
-import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile } from "./functions.js";
+import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile, parseJwt } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
@@ -44,18 +44,34 @@ const changeLine = (node, value) => {
     })
 }
 
-checkTokens().then(() => {
+checkTokens().then(async () => {
     const balance = document.querySelector("#balance");
     const lines = document.querySelectorAll("tbody > tr")
     const name = document.querySelector("#username");
     const records = document.querySelector("#records");
     const noRecords = document.querySelector("#no-records");
     const MAX_LINES = 10;
+    const parsedToken = parseJwt(getCookieValue("access"));
 
     createLogicForSubtotal(lines);
 
-    sendFetchGet(
-        `users/${getCookieValue("id")}/balance`,
+    await sendFetchGet(
+        `users/${parsedToken.user_id}`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                if (data.data.role !== "Customer") {
+                    window.location = `${window.location.origin}/clients`;
+                }
+                name.textContent = data.data.username;
+            }
+        }
+    )
+
+    await sendFetchGet(
+        `users/${parsedToken.user_id}/balance`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -66,25 +82,8 @@ checkTokens().then(() => {
         }
     )
 
-    sendFetchGet(
-        `users/${getCookieValue("id")}`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                document.cookie = `username=${data.data.first_name} ${data.data.last_name}; path=/;`;
-                document.cookie = `role=${data.data.role}; path=/;`;
-                document.cookie = `phone=${data.data.phone}; path=/;`;
-                document.cookie = `telegram=${data.data.telegram}; path=/;`;
-
-                name.textContent = getCookieValue("username");
-            }
-        }
-    )
-
-    sendFetchGet(
-        `transactions/${getCookieValue("id")}?&limit=${MAX_LINES}`,
+    await sendFetchGet(
+        `transactions/${parsedToken.user_id}?&limit=${MAX_LINES}`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
@@ -123,7 +122,7 @@ checkTokens().then(() => {
                                     }
                                 }
 
-                                transactionsData.id = getCookieValue("id");
+                                transactionsData.id = parsedToken.user_id;
 
                                 createPagination(transactionsData, lines, changeLine, "transactionsWithFiles");
                             }

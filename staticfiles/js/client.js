@@ -1,5 +1,5 @@
 import { SITE, sendFetchGet, sendFetchPostFile, sendFetchPostWithAccess, sendFetchPut } from "./api.js";
-import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile, deletePagination } from "./functions.js";
+import { changeValue, checkTokens, getCookieValue, createPagination, plugActivity, isMobile, checkMobile, deletePagination, parseJwt } from "./functions.js";
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 let minusBalance, plusBalance
@@ -45,7 +45,7 @@ const changeLine = (node, value) => {
     })
 }
 
-checkTokens().then(() => {
+checkTokens().then(async () => {
     if (!sessionStorage.getItem("client_id")) {
         window.location = `${window.location.origin}/clients`;
     }
@@ -60,13 +60,30 @@ checkTokens().then(() => {
     const records = document.querySelector("#records");
     const linkOnlyForAdmins = document.querySelectorAll("#onlyForAdmin");
     const noRecords = document.querySelector("#no-records");
+    const parsedToken = parseJwt(getCookieValue("access"));
 
     const MAX_LINES = 10;
 
-    name.textContent = getCookieValue("username");
-    sessionStorage.removeItem("client_id");
+    await sendFetchGet(
+        `users/${parsedToken.user_id}`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                if(data.data.role === "Customer"){
+                    window.location = `${window.location.origin}/orders`;
+                } else if(data.data.role !== "Admin"){
+                    linkOnlyForAdmins.forEach((elem) => elem.remove());
+                } else {
+                    createLogicForAddModal(CLIENT_ID, sendTransactions);
+                }
 
-    getCookieValue("role") === "Moderator" && linkOnlyForAdmins.forEach((elem) => elem.remove());
+                name.textContent = data.data.username;
+            }
+        }
+    )
+    sessionStorage.removeItem("client_id");
 
     const sendTransactions = (firstTime, func, page) => {
         const requestLink = page ?
@@ -183,12 +200,11 @@ checkTokens().then(() => {
         )
     }
 
-    getCookieValue("role") !== "Moderator" && createLogicForAddModal(CLIENT_ID, sendTransactions);
     createLogicForChangeModal(CLIENT_ID, sendTransactions);
     createLogicForFiles(sendTransactions);
     createLogicForSubtotal(lines);
 
-    sendFetchGet(
+    await sendFetchGet(
         `users/${CLIENT_ID}/balance`,
         getCookieValue("access"),
         (data) => {
@@ -200,7 +216,7 @@ checkTokens().then(() => {
         }
     )
 
-    sendFetchGet(
+    await sendFetchGet(
         `transactions/transaction_types?offset=0&limit=100`,
         getCookieValue("access"),
         (data) => {
@@ -213,7 +229,7 @@ checkTokens().then(() => {
         }
     )
 
-    sendFetchGet(
+    await   sendFetchGet(
         `users/${CLIENT_ID}`,
         getCookieValue("access"),
         (data) => {
