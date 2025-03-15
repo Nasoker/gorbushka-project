@@ -31,26 +31,6 @@ checkTokens().then(async () => {
 
     const parsedToken = parseJwt(getCookieValue("access"));
 
-    await sendFetchGet(
-        `users/${parsedToken.user_id}`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                role = data.data.role;
-                if(role === "Customer"){
-                    window.location = `${window.location.origin}/orders`;
-                } else if(role !== "Admin"){
-                    linkOnlyForAdmins.forEach((elem) => elem.remove());
-                    addOperationOpenModal.remove();
-                }
-
-                name.textContent = data.data.username;
-            }
-        }
-    )
-
     const MAX_LINES = 100;
     day = new Date().toISOString().split('T')[0];
 
@@ -113,15 +93,35 @@ checkTokens().then(async () => {
     });
 
     await sendFetchGet(
-        `transactions/transaction_types?offset=0&limit=100`,
+        `users/${parsedToken.user_id}`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                const purchaseID = data.data.items.find((elem) => elem.type === "Закуп").id;
-                role === "Admin" && createLogicForAddModal(purchaseID, getPurchases)
-                getPurchases(true);
+                role = data.data.role;
+                if(role === "Customer"){
+                    window.location = `${window.location.origin}/orders`;
+                } else if(role !== "Admin"){
+                    linkOnlyForAdmins.forEach((elem) => elem.remove());
+                    addOperationOpenModal.remove();
+                }
+
+                name.textContent = data.data.username;
+
+                sendFetchGet(
+                    `transactions/transaction_types?offset=0&limit=100`,
+                    getCookieValue("access"),
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else {
+                            const purchaseID = data.data.items.find((elem) => elem.type === "Закуп").id;
+                            role === "Admin" && createLogicForAddModal(purchaseID, getPurchases)
+                            getPurchases(true);
+                        }
+                    }
+                )
             }
         }
     )
