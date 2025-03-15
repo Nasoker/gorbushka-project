@@ -16,7 +16,9 @@ function getCurrentDate() {
 
 const changeLine = (node, value) => {
     const children = Array.from(node.children);
-    const keys = role ? ["name", "telegram", "phone", "last_transaction_date", "balance"] : ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
+    const keys = role === "Moderator" ?
+        ["name", "telegram", "phone", "last_transaction_date", "balance"] :
+        ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
     node.id = value.id;
 
     children.forEach((elem, i) => {
@@ -70,26 +72,6 @@ checkTokens().then(async () => {
 
     const parsedToken = parseJwt(getCookieValue("access"));
 
-    await sendFetchGet(
-        `users/${parsedToken.user_id}`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                role = data.data.role;
-
-                if(role === "Customer"){
-                    window.location = `${window.location.origin}/orders`;
-                } else if(role !== "Admin"){
-                    linkOnlyForAdmins.forEach((elem) => elem.remove());
-                }
-
-                name.textContent = data.data.username;
-            }
-        }
-    )
-
     const MAX_LINES = 10;
 
     const getCustomersByDefinedName = () => {
@@ -132,7 +114,7 @@ checkTokens().then(async () => {
 
     lines.forEach((elem) => {
         elem.addEventListener("click", (e) => {
-            if(!e.target.classList.contains("btn")){
+            if (!e.target.classList.contains("btn")) {
                 e.preventDefault();
                 sessionStorage.setItem("client_id", elem.id);
                 window.location = `${window.location.origin}/client`;
@@ -168,33 +150,55 @@ checkTokens().then(async () => {
         `users/customers?&limit=${MAX_LINES}&is_debtor=true` :
         `users/customers?&limit=${MAX_LINES}`
 
-    await sendFetchGet(
-        requestLink,
+    sendFetchGet(
+        `users/${parsedToken.user_id}`,
         getCookieValue("access"),
         (data) => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                if (data.data.pagination.total === 0) {
-                    records.classList.remove("active");
-                    noRecords.classList.add("active");
-                } else {
-                    records.classList.add("active");
-                    noRecords.classList.remove("active");
-                    for (let i = 0; i < MAX_LINES; i++) {
-                        if (i > data.data.items.length - 1) {
-                            lines[i].style.display = "none";
-                        } else {
-                            lines[i].style.display = "table-row";
-                            changeLine(lines[i], data.data.items[i]);
-                        }
-                    }
+                role = data.data.role;
 
-                    createPagination(data, lines, changeLine, "customers");
+                if (role === "Customer") {
+                    window.location = `${window.location.origin}/orders`;
+                } else if (role !== "Admin") {
+                    linkOnlyForAdmins.forEach((elem) => elem.remove());
+                } else {
+                    createLogicForAddModal();
                 }
 
-                plugActivity(false);
-                isMobile && checkMobile();
+                name.textContent = data.data.username;
+                
+                sendFetchGet(
+                    requestLink,
+                    getCookieValue("access"),
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else {
+                            if (data.data.pagination.total === 0) {
+                                records.classList.remove("active");
+                                noRecords.classList.add("active");
+                            } else {
+                                records.classList.add("active");
+                                noRecords.classList.remove("active");
+                                for (let i = 0; i < MAX_LINES; i++) {
+                                    if (i > data.data.items.length - 1) {
+                                        lines[i].style.display = "none";
+                                    } else {
+                                        lines[i].style.display = "table-row";
+                                        changeLine(lines[i], data.data.items[i]);
+                                    }
+                                }
+            
+                                createPagination(data, lines, changeLine, "customers");
+                            }
+            
+                            plugActivity(false);
+                            isMobile && checkMobile();
+                        }
+                    }
+                )
             }
         }
     )
@@ -209,8 +213,6 @@ checkTokens().then(async () => {
     searchButton.addEventListener("click", () => {
         getCustomersByDefinedName();
     });
-
-    role === "Admin" && createLogicForAddModal();
 });
 
 const createLogicForAddModal = () => {
@@ -220,13 +222,13 @@ const createLogicForAddModal = () => {
     const addOperationOpenModal = document.querySelectorAll("#add-operation");
 
     let id, balanceNode, transactionDateNode,
-    date = getCurrentDate();
+        date = getCurrentDate();
 
     const modalActivity = (state) => {
         [...addOperationModalInputs, ...addOperationModalBtns].forEach((elem, i) => {
             elem.style.opacity = state ? 1 : 0.5;
             elem.style.pointerEvents = state ? "auto" : "none";
-            elem.tabIndex = state ? i+1 : -1;
+            elem.tabIndex = state ? i + 1 : -1;
         })
     }
 
@@ -317,7 +319,7 @@ const createLogicForAddModal = () => {
     })
 
     document.addEventListener("keypress", () => {
-        if (event.key === "Enter" && addOperationModal.classList.contains("show")) { 
+        if (event.key === "Enter" && addOperationModal.classList.contains("show")) {
             if (addOperationModalInputs[0].value.replace(/\+\-/g, "").length > 0) {
                 modalActivity(false);
                 addOperationModalInputs[0].style.outline = "none";
