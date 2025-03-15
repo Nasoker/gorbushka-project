@@ -29,6 +29,7 @@ if(getCookieValue("refresh")){
             } else {
                 document.cookie = `access=${data.access}; path=/; max-age=3600`;
                 document.cookie = `refresh=${data.refresh}; path=/; max-age=${3600 * 24 * 3}`;
+                const parsedToken = parseJwt(data.access);
 
                 sendFetchGet(
                     `users/${parsedToken.user_id}`,
