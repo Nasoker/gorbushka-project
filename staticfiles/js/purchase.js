@@ -38,8 +38,7 @@ checkTokens().then(async () => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                let role = data.data.role;
-
+                role = data.data.role;
                 if(role === "Customer"){
                     window.location = `${window.location.origin}/orders`;
                 } else if(role !== "Admin"){
