@@ -59,6 +59,7 @@ class Transaction(TimeStampedModel):
         null=True,
         verbose_name='Клиент',
         limit_choices_to={'role': 'Customer'},
+        related_name='customers',
     )
 
     provider = models.CharField(
@@ -122,3 +123,43 @@ class Transaction(TimeStampedModel):
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
         ordering = ['-created_at']
+
+
+class TransactionRequest(Transaction):
+    REQUESTED = 'requested'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+
+    STATUS_CHOICES = (
+        (REQUESTED, 'Запрошен'),
+        (APPROVED, 'Подтвержден'),
+        (REJECTED, 'Отклонен'),
+    )
+
+    requester = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Запросил',
+        limit_choices_to={'role': ['Cashier', 'Moderator', 'Admin']},
+        related_name='requesters',
+    )
+
+    # TODO: who can approve Transactions ??? (role)
+    approver = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Подтвердил/Отклонил',
+        limit_choices_to={'role': 'Admin'},
+        related_name='approvers',
+    )
+
+    status = models.CharField(
+        max_length=25,
+        choices=STATUS_CHOICES,
+        default=REQUESTED,
+        verbose_name='Статус',
+    )
