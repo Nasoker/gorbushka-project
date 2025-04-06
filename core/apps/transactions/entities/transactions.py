@@ -26,3 +26,10 @@ class Transaction:
     comment: str | None = field(default=None)
     created_at: datetime | None = field(default_factory=datetime.now)
     updated_at: datetime | None = field(default=None)
+
+
+@dataclass
+class TransactionRequest(Transaction):
+    status: str | None = field(default=None)
+    requester: User | None = field(default=None)
+    approver: User | None = field(default=None)

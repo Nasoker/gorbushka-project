@@ -185,7 +185,7 @@ def update_transaction_handler(
     if not transaction:
         raise HttpError(status_code=400, message=f'Transaction with id: {transaction_id} not found')
 
-    updated_transaction = service.update_transaction(transaction_id, transaction_in.dict())
+    updated_transaction = service.update_transaction(transaction_id, transaction_in.model_dump())
 
     return ApiResponse(data=TransactionOutSchema.from_entity(updated_transaction))
 
