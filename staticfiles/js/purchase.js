@@ -57,7 +57,8 @@ checkTokens().then(async () => {
 
                     if (data.data.pagination.total === 0) {
                         records.classList.remove("active");
-                        noRecords.classList.add("active");                        
+                        noRecords.classList.add("active");
+                        changeValue(totalPurchases, 0, true);                        
                     } else {
                         records.classList.add("active");
                         noRecords.classList.remove("active");
@@ -72,7 +73,7 @@ checkTokens().then(async () => {
                                 changeLine(lines[i], transactions[i]);
                             }
                         }
-                        
+
                         changeValue(totalPurchases, totalSum, true);
                     }
 
@@ -102,8 +103,10 @@ checkTokens().then(async () => {
                 role = data.data.role;
                 if(role === "Customer"){
                     window.location = `${window.location.origin}/orders`;
-                } else if(role !== "Admin"){
+                } else if(role === "Moderator"){
                     linkOnlyForAdmins.forEach((elem) => elem.remove());
+                    addOperationOpenModal.remove();
+                } else if(role === "Depositor"){
                     addOperationOpenModal.remove();
                 }
 

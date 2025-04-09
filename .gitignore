@@ -8,3 +8,4 @@ static/*
 media/*
 !static/.gitkeep
 *.sqlite3
+docker_compose/storages.yaml

@@ -25,9 +25,14 @@ const changeLine = (node, value) => {
                 if (!value[keys[i]]) {
                     elem.children[0].textContent = "Добавить";
                     elem.children[0].href = "";
+
+                    if(role === "Depositor") {
+                        elem.children[0].style.display = "none";
+                    }
                 } else {
                     elem.children[0].textContent = "Просмотреть";
                     elem.children[0].href = value[keys[i]];
+                    elem.children[0].style.display = "block";
                 }
             } else {
                 if (keys[i] === "client_balance") {
@@ -63,29 +68,6 @@ checkTokens().then(async () => {
     const parsedToken = parseJwt(getCookieValue("access"));
 
     const MAX_LINES = 10;
-
-    await sendFetchGet(
-        `users/${parsedToken.user_id}`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                role = data.data.role;
-                
-                if(role === "Customer"){
-                    window.location = `${window.location.origin}/orders`;
-                } else if(role !== "Admin"){
-                    linkOnlyForAdmins.forEach((elem) => elem.remove());
-                } else {
-                    createLogicForAddModal(CLIENT_ID, sendTransactions);
-                }
-
-                name.textContent = data.data.username;
-            }
-        }
-    )
-    sessionStorage.removeItem("client_id");
 
     const sendTransactions = (firstTime, func, page) => {
         const requestLink = page ?
@@ -202,9 +184,40 @@ checkTokens().then(async () => {
         )
     }
 
-    createLogicForChangeModal(CLIENT_ID, sendTransactions);
-    createLogicForFiles(sendTransactions);
-    createLogicForSubtotal(lines);
+    await sendFetchGet(
+        `users/${parsedToken.user_id}`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                role = data.data.role;
+                
+                if(role === "Customer"){
+                    window.location = `${window.location.origin}/orders`;
+                } else if(role === "Moderator"){
+                    linkOnlyForAdmins.forEach((elem) => elem.remove());
+                } else if(role === "Admin"){
+                    createLogicForAddModal(CLIENT_ID, sendTransactions);
+                } else {
+                    const addOperation = document.querySelector(".add-operation");
+                    addOperation.remove();
+                }
+
+                name.textContent = data.data.username;
+
+                if(role !== "Depositor") {
+                    createLogicForChangeModal(CLIENT_ID, sendTransactions);
+                }
+                createLogicForSubtotal(lines);
+                createLogicForFiles(sendTransactions, role);
+
+
+                sendTransactions(true);
+            }
+        }
+    )
+    sessionStorage.removeItem("client_id");
 
     await sendFetchGet(
         `users/${CLIENT_ID}/balance`,
@@ -231,7 +244,7 @@ checkTokens().then(async () => {
         }
     )
 
-    await   sendFetchGet(
+    await sendFetchGet(
         `users/${CLIENT_ID}`,
         getCookieValue("access"),
         (data) => {
@@ -246,8 +259,6 @@ checkTokens().then(async () => {
             }
         }
     )
-
-    sendTransactions(true);
 });
 
 
@@ -370,7 +381,9 @@ const createLogicForChangeModal = (id, fetch) => {
     const changeOperationFile = document.querySelector(".modal-input-file");
     let operationId = 0, startValueSum, startValueComment
 
-    role === "Moderator" && changeOperationModalInputs.forEach((elem) => elem.remove())
+    if(role === "Moderator" || role === "Depositor") {
+        changeOperationModalInputs.forEach((elem) => elem.remove())
+    }
 
     const modalActivity = (state) => {
         [...changeOperationModalInputs, ...changeOperationModalBtns].forEach((elem) => {
@@ -552,7 +565,7 @@ const createLogicForSubtotal = (lines) => {
     })
 }
 
-const createLogicForFiles = (fetch) => {
+const createLogicForFiles = (fetch, role) => {
     const addFileModal = document.querySelector("#add-file-modal");
     const addFileInput = addFileModal.querySelector(".modal_input_file");
     const addFileBtns = addFileModal.querySelectorAll("button");
@@ -580,14 +593,16 @@ const createLogicForFiles = (fetch) => {
     addFileOpenModal.forEach((btn) => {
         btn.addEventListener("click", () => {
             if (btn.textContent === "Добавить") {
-                const backdrop = document.querySelector(".modal-backdrop");
+                if(role !== "Depositor") {
+                    const backdrop = document.querySelector(".modal-backdrop");
 
-                backdrop.style.zIndex = 2;
-                backdrop.classList.add("show");
-                addFileModal.classList.add("show");
-                addFileModal.style.display = "block";
+                    backdrop.style.zIndex = 2;
+                    backdrop.classList.add("show");
+                    addFileModal.classList.add("show");
+                    addFileModal.style.display = "block";
 
-                operationID = btn.parentNode.parentNode.id;
+                    operationID = btn.parentNode.parentNode.id;
+                }
             } else {
                 window.open(SITE + btn.href);
             }
