@@ -16,7 +16,7 @@ function getCurrentDate() {
 
 const changeLine = (node, value) => {
     const children = Array.from(node.children);
-    const keys = role === "Moderator" ?
+    const keys = role === "Moderator" || role === "Depositor" ?
         ["name", "telegram", "phone", "last_transaction_date", "balance"] :
         ["name", "telegram", "phone", "last_transaction_date", "button", "balance"];
     node.id = value.id;
@@ -161,10 +161,13 @@ checkTokens().then(async () => {
 
                 if (role === "Customer") {
                     window.location = `${window.location.origin}/orders`;
-                } else if (role !== "Admin") {
+                } else if (role === "Moderator") {
                     linkOnlyForAdmins.forEach((elem) => elem.remove());
-                } else {
+                } else if (role === "Admin") {
                     createLogicForAddModal();
+                } else {
+                    const changeBalanceBlock = document.querySelector("th#onlyForAdmin");
+                    changeBalanceBlock.remove();
                 }
 
                 name.textContent = data.data.username;

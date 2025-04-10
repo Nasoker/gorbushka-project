@@ -60,9 +60,11 @@ checkTokens().then(async () => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                if(data.data.role === "Customer"){
+                const role = data.data.role;
+
+                if(role === "Customer"){
                     window.location = `${window.location.origin}/orders`;
-                } else if(data.data.role !== "Admin"){
+                } else if(role !== "Admin" && role !== "Depositor"){
                     window.location = `${window.location.origin}/clients`;
                 }
 

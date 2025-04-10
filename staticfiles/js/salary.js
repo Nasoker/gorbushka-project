@@ -3,7 +3,7 @@ import { checkMobile, checkTokens, getCookieValue, isMobile, parseJwt, plugActiv
 
 !function () { "use strict"; var e = document.querySelector(".sidebar"), t = document.querySelectorAll("#sidebarToggle, #sidebarToggleTop"); if (e) { e.querySelector(".collapse"); var o = [].slice.call(document.querySelectorAll(".sidebar .collapse")).map((function (e) { return new bootstrap.Collapse(e, { toggle: !1 }) })); for (var n of t) n.addEventListener("click", (function (t) { if (document.body.classList.toggle("sidebar-toggled"), e.classList.toggle("toggled"), e.classList.contains("toggled")) for (var n of o) n.hide() })); window.addEventListener("resize", (function () { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 768) for (var e of o) e.hide() })) } var i = document.querySelector("body.fixed-nav .sidebar"); i && i.on("mousewheel DOMMouseScroll wheel", (function (e) { if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 768) { var t = e.originalEvent, o = t.wheelDelta || -t.detail; this.scrollTop += 30 * (o < 0 ? 1 : -1), e.preventDefault() } })); var l = document.querySelector(".scroll-to-top"); l && window.addEventListener("scroll", (function () { var e = window.pageYOffset; l.style.display = e > 100 ? "block" : "none" })) }();
 
-const createLine = (table, info) => {
+const createLine = (table, info, role) => {
     const bodyLine = document.createElement("tr");
     bodyLine.classList.add("table_row");
 
@@ -27,24 +27,26 @@ const createLine = (table, info) => {
         bodyLine.appendChild(cell);
         Array.from(bodyLine.children).forEach((elem, i) => {
             elem.addEventListener("click", () => {
-                if (i !== 0) {
-                    const backdrop = document.querySelector(".modal-backdrop");
-                    const changeSalaryModal = document.querySelector("#modal-change-salary");
-                    const changeSalaryModalInputs = changeSalaryModal.querySelectorAll(".modal-input-text");
+                if(role === "Admin") {
+                    if (i !== 0) {
+                        const backdrop = document.querySelector(".modal-backdrop");
+                        const changeSalaryModal = document.querySelector("#modal-change-salary");
+                        const changeSalaryModalInputs = changeSalaryModal.querySelectorAll(".modal-input-text");
 
-                    changeSalaryModal.classList.add("show");
-                    changeSalaryModal.style.display = "block";
-                    backdrop.classList.add("show");
-                    backdrop.style.zIndex = 1;
+                        changeSalaryModal.classList.add("show");
+                        changeSalaryModal.style.display = "block";
+                        backdrop.classList.add("show");
+                        backdrop.style.zIndex = 1;
 
-                    const lineElems = bodyLine.querySelectorAll("td");
+                        const lineElems = bodyLine.querySelectorAll("td");
 
-                    const sum = lineElems[2].textContent;
-                    const bonus = lineElems[3].textContent;
+                        const sum = lineElems[2].textContent;
+                        const bonus = lineElems[3].textContent;
 
-                    changeSalaryModalInputs[0].value = Number(sum);
-                    changeSalaryModalInputs[1].value = Number(bonus);
-                    bodyLine.id = "active";
+                        changeSalaryModalInputs[0].value = Number(sum);
+                        changeSalaryModalInputs[1].value = Number(bonus);
+                        bodyLine.id = "active";
+                    }
                 }
             })
         })
@@ -66,18 +68,43 @@ checkTokens().then(async () => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                if(data.data.role === "Customer"){
+                const role = data.data.role;
+
+                if(role === "Customer"){
                     window.location = `${window.location.origin}/orders`;
-                } else if(data.data.role !== "Admin"){
+                } else if(role !== "Admin" && role !== "Depositor"){
                     window.location = `${window.location.origin}/clients`;
                 }
+
+                if(role === "Admin") {
+                    createLogicForChangeSalary();
+                    createLogicCountSalaryModal();
+                } else {
+                    finishBtn.remove();
+                }
+
+                sendFetchGet(
+                    `users/employees?&limit=100`,
+                    getCookieValue("access"),
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else {
+                            data.data.items.forEach((elem, i) => {
+                                elem.salary !== 0 && createLine(tableBody, elem, role);
+                            })
+            
+                            plugActivity(false);
+                            isMobile && checkMobile();
+                        }
+                    }
+                )
 
                 name.textContent = data.data.username;
             }
         }
     )
-    createLogicForChangeSalary();
-    createLogicCountSalaryModal();
+
     finishBtn.addEventListener("click", () => {
         const backdrop = document.querySelector(".modal-backdrop");
         const changeSalaryModal = document.querySelector("#salary-out");
@@ -135,24 +162,6 @@ checkTokens().then(async () => {
             alert("Ни один работник не выбран. Зарплата не может быть расчитана!")
         }
     });
-
-    sendFetchGet(
-        `users/employees?&limit=100`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                data.data.items.forEach((elem, i) => {
-                    elem.salary !== 0 && createLine(tableBody, elem);
-                })
-
-                plugActivity(false);
-                isMobile && checkMobile();
-            }
-        }
-    )
-
 });
 
 

@@ -20,23 +20,6 @@ checkTokens().then(async () => {
 
     const parsedToken = parseJwt(getCookieValue("access"));
 
-    await sendFetchGet(
-        `users/${parsedToken.user_id}`,
-        getCookieValue("access"),
-        (data) => {
-            if (data.errors.length > 0) {
-                alert(data.errors[0])
-            } else {
-                if(data.data.role === "Customer"){
-                    window.location = `${window.location.origin}/orders`;
-                } else if(data.data.role !== "Admin"){
-                    window.location = `${window.location.origin}/clients`;
-                }
-
-                name.textContent = data.data.username;
-            }
-        }
-    )
     // Деньги в тезере
     await sendFetchGet(
         `users/${SITE.includes("localhost") ? 2 : 37}/balance`,
@@ -70,10 +53,16 @@ checkTokens().then(async () => {
             if (data.errors.length > 0) {
                 alert(data.errors[0])
             } else {
-                if(data.data.role === "Customer"){
+                const role = data.data.role;
+
+                if(role === "Customer") {
                     window.location = `${window.location.origin}/orders`;
-                } else if(data.data.role !== "Admin"){
+                } else if(role !== "Admin" && role !== "Depositor") {
                     window.location = `${window.location.origin}/clients`;
+                }
+
+                if(role === "Admin") {
+                    createLogicForChangeModal();
                 }
 
                 name.textContent = data.data.username;
@@ -146,7 +135,6 @@ checkTokens().then(async () => {
                                                                 capSum += data.data.amount_in_goods;
                                                                 capSum += data.data.amount_in_defects;
                                                                 capSum += data.data.debt_for_goods_amount;  
-            
                                                                 capitalizationSum.textContent = change(capSum);
             
                                                                 plugActivity(false);
@@ -170,8 +158,6 @@ checkTokens().then(async () => {
     clientsDebtsLink.addEventListener("click", () => {
         window.location = `${window.location.origin}/clients#is_debtor`;
     })
-
-    createLogicForChangeModal();
 });
 
 
