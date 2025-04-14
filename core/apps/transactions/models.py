@@ -4,6 +4,7 @@ from django.utils.html import format_html
 from core.apps.common.models import TimeStampedModel
 from core.apps.transactions.entities.transactions import (
     Transaction as TransactionEntity,
+    TransactionRequest as TransactionRequestEntity,
     TransactionType as TransactionTypeEntity,
 )
 from core.apps.users.models import User
@@ -59,6 +60,7 @@ class Transaction(TimeStampedModel):
         null=True,
         verbose_name='Клиент',
         limit_choices_to={'role': 'Customer'},
+        related_name='customers',
     )
 
     provider = models.CharField(
@@ -121,4 +123,80 @@ class Transaction(TimeStampedModel):
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+        ordering = ['-created_at']
+
+
+class TransactionRequest(Transaction):
+    REQUESTED = 'requested'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+
+    STATUS_CHOICES = (
+        (REQUESTED, 'Запрошен'),
+        (APPROVED, 'Подтвержден'),
+        (REJECTED, 'Отклонен'),
+    )
+
+    requester = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Запросил',
+        limit_choices_to={'role': ['Cashier', 'Moderator', 'Admin']},
+        related_name='requesters',
+    )
+
+    # TODO: who can approve Transactions ??? (role)
+    approver = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='Подтвердил/Отклонил',
+        limit_choices_to={'role': 'Admin'},
+        related_name='approvers',
+    )
+
+    status = models.CharField(
+        max_length=25,
+        choices=STATUS_CHOICES,
+        default=REQUESTED,
+        verbose_name='Статус',
+    )
+
+    def to_entity(self) -> TransactionRequestEntity:
+        return TransactionRequestEntity(
+            id=self.pk,
+            type=self.transaction_type,
+            provider=self.provider,
+            amount=float(self.amount),
+            comment=self.comment,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            status=self.status,
+            approver=self.approver,
+            requester=self.requester,
+        )
+
+    @classmethod
+    def from_entity(cls, entity: TransactionRequestEntity) -> 'TransactionRequest':
+        customer = User.from_entity(entity.customer) if entity.customer else None
+        requester = User.from_entity(entity.requester) if entity.requester else None
+        approver = User.from_entity(entity.approver) if entity.approver else None
+
+        return cls(
+            transaction_type=TransactionType.from_entity(entity.type),
+            customer=customer,
+            amount=float(entity.amount),
+            comment=entity.comment,
+            provider=entity.provider,
+            status=entity.status,
+            requester=requester,
+            approver=approver,
+        )
+
+    class Meta:
+        verbose_name = 'Запрос Транзакции'
+        verbose_name_plural = 'Запросы транзакций'
         ordering = ['-created_at']
