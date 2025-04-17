@@ -18,6 +18,7 @@ from core.api.v1.transaction_requests.schemas import (
     TransactionRequestOutSchema,
     UpdateTransactionRequestInSchema,
 )
+from core.api.v1.transactions.schemas import TransactionOutSchema
 from core.apps.transactions.services.transaction_requests import (
     BaseTransactionRequestsService,
     ORMTransactionRequestsService,
@@ -125,18 +126,22 @@ def update_transaction_request_handler(
     return ApiResponse(data=TransactionRequestOutSchema.from_entity(updated_transaction))
 
 
-@router.post('/{transaction_request_id}/approve', response=ApiResponse[TransactionRequestOutSchema])
+@router.post('/{transaction_request_id}/approve', response=ApiResponse[TransactionOutSchema])
 def approve_transaction_request_handler(
         request: HttpRequest,
         transaction_request_id: int,
         approver_id: int,
-) -> ApiResponse[TransactionRequestOutSchema]:
-    service: BaseTransactionRequestsService = ORMTransactionRequestsService()
-    service.approve_transaction_request(transaction_request_id, approver_id)
-    # TODO: what can we return here ??? (Maybe created transaction)
+) -> ApiResponse[TransactionOutSchema]:
+    try:
+        service: BaseTransactionRequestsService = ORMTransactionRequestsService()
+        transaction = service.approve_transaction_request(transaction_request_id, approver_id)
+
+        return ApiResponse(data=TransactionOutSchema.from_entity(transaction))
+    except Exception as e:
+        raise HttpError(status_code=400, message=str(e))
 
 
-@router.post('/{transaction_request_id}/reject', response=ApiResponse[TransactionRequestOutSchema])
+@router.post('/{transaction_request_id}/reject', response=ApiResponse[str])
 def reject_transaction_request_handler(
         request: HttpRequest,
         transaction_request_id: int,
