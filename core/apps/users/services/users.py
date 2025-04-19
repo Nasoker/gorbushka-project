@@ -91,8 +91,8 @@ class ORMUsersService(BaseUsersService):
                  .objects \
                  .order_by('-date_joined') \
                  .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
-                 .annotate(balance=Sum('transaction__amount')) \
-                 .annotate(last_transaction_date=Max('transaction__created_at')) \
+                 .annotate(balance=Sum('customers__amount')) \
+                 .annotate(last_transaction_date=Max('customers__created_at')) \
                  .filter(query) \
                  .select_related()[pagination.offset:pagination.offset + pagination.limit]
 
@@ -105,7 +105,7 @@ class ORMUsersService(BaseUsersService):
         return UserModel \
             .objects \
             .annotate(full_name=Concat('first_name', Value(' '), 'last_name')) \
-            .annotate(balance=Sum('transaction__amount')) \
+            .annotate(balance=Sum('customers__amount')) \
             .filter(query) \
             .count()
 

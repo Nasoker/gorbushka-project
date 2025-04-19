@@ -5,10 +5,19 @@ from abc import (
 from typing import Iterable
 
 from core.api.filters import PaginationIn
-from core.apps.transactions.entities.transactions import TransactionRequest as TransactionRequest
+from core.apps.transactions.entities.transactions import (
+    Transaction as Transaction,
+    TransactionRequest as TransactionRequest,
+)
 from core.apps.transactions.models import (
+    Transaction as TransactionModel,
     TransactionRequest as TransactionRequestModel,
     TransactionType as TransactionTypeModel,
+)
+from core.apps.users.models import User as UserModel
+from core.apps.users.services.users import (
+    BaseUsersService,
+    ORMUsersService,
 )
 
 
@@ -34,7 +43,7 @@ class BaseTransactionRequestsService(ABC):
         ...
 
     @abstractmethod
-    def approve_transaction_request(self, transaction_request_id: int, approver_id: int) -> None:
+    def approve_transaction_request(self, transaction_request_id: int, approver_id: int) -> Transaction:
         ...
 
     @abstractmethod
@@ -90,19 +99,36 @@ class ORMTransactionRequestsService(BaseTransactionRequestsService):
         transaction_request_dto.save()
         return transaction_request_dto.to_entity()
 
-    def approve_transaction_request(self, transaction_request_id: int, approver_id: int) -> None:
+    def approve_transaction_request(self, transaction_request_id: int, approver_id: int) -> Transaction:
         transaction_request_dto = TransactionRequestModel \
             .objects \
             .select_related() \
             .get(pk=transaction_request_id)
 
-        # TODO: check if it works
+        users_service: BaseUsersService = ORMUsersService()
+        approver = users_service.get_user(approver_id)
+
+        if approver is None:
+            raise Exception(f'No Approver found with id: {approver_id}')
+
         setattr(transaction_request_dto, 'status', TransactionRequestModel.APPROVED)
-        setattr(transaction_request_dto, 'approver', approver_id)
+        setattr(transaction_request_dto, 'approver', UserModel.from_entity(approver))
 
         transaction_request_dto.save()
 
-        # TODO: create transaction
+        # TODO: link transaction request and transaction ???
+
+        transaction_dto = TransactionModel(
+            transaction_type=transaction_request_dto.transaction_type,
+            customer=transaction_request_dto.customer,
+            provider=transaction_request_dto.provider,
+            amount=transaction_request_dto.amount,
+            comment=transaction_request_dto.comment,
+        )
+
+        transaction_dto.save()
+
+        return transaction_dto.to_entity()
 
     def reject_transaction_request(self, transaction_request_id: int, approver_id: int) -> None:
         transaction_request_dto = TransactionRequestModel \
@@ -110,8 +136,13 @@ class ORMTransactionRequestsService(BaseTransactionRequestsService):
             .select_related() \
             .get(pk=transaction_request_id)
 
-        # TODO: check if it works
+        users_service: BaseUsersService = ORMUsersService()
+        approver = users_service.get_user(approver_id)
+
+        if approver is None:
+            raise Exception(f'No Approver found with id: {approver_id}')
+
         setattr(transaction_request_dto, 'status', TransactionRequestModel.REJECTED)
-        setattr(transaction_request_dto, 'approver', approver_id)
+        setattr(transaction_request_dto, 'approver', UserModel.from_entity(approver))
 
         transaction_request_dto.save()

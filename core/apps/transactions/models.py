@@ -44,25 +44,7 @@ class TransactionType(TimeStampedModel):
         verbose_name_plural = 'Типы транзакций'
 
 
-class Transaction(TimeStampedModel):
-    transaction_type = models.ForeignKey(
-        TransactionType,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=False,
-        verbose_name='Тип транзакции',
-    )
-
-    customer = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        verbose_name='Клиент',
-        limit_choices_to={'role': 'Customer'},
-        related_name='customers',
-    )
-
+class BaseTransactionModel(TimeStampedModel):
     provider = models.CharField(
         max_length=255,
         blank=True,
@@ -71,6 +53,7 @@ class Transaction(TimeStampedModel):
     )
 
     amount = models.DecimalField(
+        default=0,
         max_digits=12,
         decimal_places=2,
         blank=False,
@@ -83,6 +66,30 @@ class Transaction(TimeStampedModel):
         blank=True,
         null=True,
         verbose_name='Примечание',
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Transaction(BaseTransactionModel):
+    transaction_type = models.ForeignKey(
+        TransactionType,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        verbose_name='Тип транзакции',
+        related_name='transaction_types',
+    )
+
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name='Клиент',
+        limit_choices_to={'role': 'Customer'},
+        related_name='customers',
     )
 
     def colored_amount(self):
@@ -126,7 +133,7 @@ class Transaction(TimeStampedModel):
         ordering = ['-created_at']
 
 
-class TransactionRequest(Transaction):
+class TransactionRequest(BaseTransactionModel):
     REQUESTED = 'requested'
     APPROVED = 'approved'
     REJECTED = 'rejected'
@@ -135,6 +142,25 @@ class TransactionRequest(Transaction):
         (REQUESTED, 'Запрошен'),
         (APPROVED, 'Подтвержден'),
         (REJECTED, 'Отклонен'),
+    )
+
+    transaction_type = models.ForeignKey(
+        TransactionType,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        verbose_name='Тип транзакции',
+        related_name='request_transaction_types',
+    )
+
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name='Клиент',
+        limit_choices_to={'role': 'Customer'},
+        related_name='request_customers',
     )
 
     requester = models.ForeignKey(
@@ -147,7 +173,6 @@ class TransactionRequest(Transaction):
         related_name='requesters',
     )
 
-    # TODO: who can approve Transactions ??? (role)
     approver = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -175,6 +200,7 @@ class TransactionRequest(Transaction):
             created_at=self.created_at,
             updated_at=self.updated_at,
             status=self.status,
+            customer=self.customer,
             approver=self.approver,
             requester=self.requester,
         )
