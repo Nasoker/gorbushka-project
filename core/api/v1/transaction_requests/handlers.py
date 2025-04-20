@@ -13,6 +13,7 @@ from core.api.schemas import (
     ApiResponse,
     ListPaginatedResponse,
 )
+from core.api.v1.transaction_requests.filters import TransactionRequestFilters
 from core.api.v1.transaction_requests.schemas import (
     CreateTransactionRequestInSchema,
     TransactionRequestOutSchema,
@@ -39,20 +40,24 @@ router = Router(tags=['Transaction Requests'])
 @router.get('', response=ApiResponse[ListPaginatedResponse[TransactionRequestOutSchema]])
 def get_transaction_requests_handler(
         request: HttpRequest,
+        filters: Query[TransactionRequestFilters],
         pagination_in: Query[PaginationIn],
 ) -> ApiResponse[ListPaginatedResponse[TransactionRequestOutSchema]]:
-    service: BaseTransactionRequestsService = ORMTransactionRequestsService()
-    transaction_requests = service.get_transaction_requests(pagination=pagination_in)
-    transaction_requests_count = service.get_transaction_requests_count()
+    try:
+        service: BaseTransactionRequestsService = ORMTransactionRequestsService()
+        transaction_requests = service.get_transaction_requests(filters=filters, pagination=pagination_in)
+        transaction_requests_count = service.get_transaction_requests_count(filters=filters)
 
-    items = [TransactionRequestOutSchema.from_entity(obj) for obj in transaction_requests]
-    pagination__out = PaginationOut(
-        offset=pagination_in.offset,
-        limit=pagination_in.limit,
-        total=transaction_requests_count,
-    )
+        items = [TransactionRequestOutSchema.from_entity(obj) for obj in transaction_requests]
+        pagination__out = PaginationOut(
+            offset=pagination_in.offset,
+            limit=pagination_in.limit,
+            total=transaction_requests_count,
+        )
 
-    return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination__out))
+        return ApiResponse(data=ListPaginatedResponse(items=items, pagination=pagination__out))
+    except Exception as e:
+        raise HttpError(status_code=400, message=str(e))
 
 
 @router.get('/{transaction_request_id}', response=ApiResponse[TransactionRequestOutSchema])
@@ -111,19 +116,7 @@ def update_transaction_request_handler(
         transaction_request_id: int,
         transaction_request_in: UpdateTransactionRequestInSchema,
 ) -> ApiResponse[TransactionRequestOutSchema]:
-    service: BaseTransactionRequestsService = ORMTransactionRequestsService()
-
-    transaction_request = service.get_transaction_request(transaction_request_id)
-    if not transaction_request:
-        raise HttpError(status_code=400, message=f'Transaction Request with id: {transaction_request_id} not found')
-
-    # TODO: check if we can update Customer
-    updated_transaction = service.update_transaction_request(
-        transaction_request_id,
-        transaction_request_in.model_dump(),
-    )
-
-    return ApiResponse(data=TransactionRequestOutSchema.from_entity(updated_transaction))
+    raise HttpError(status_code=500, message='Not Implemented')
 
 
 @router.post('/{transaction_request_id}/approve', response=ApiResponse[TransactionOutSchema])

@@ -138,6 +138,12 @@ class TransactionRequest(BaseTransactionModel):
     APPROVED = 'approved'
     REJECTED = 'rejected'
 
+    STATUSES = [
+        REQUESTED,
+        APPROVED,
+        REJECTED,
+    ]
+
     STATUS_CHOICES = (
         (REQUESTED, 'Запрошен'),
         (APPROVED, 'Подтвержден'),
