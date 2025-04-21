@@ -122,7 +122,7 @@ checkTokens().then(async () => {
         });
     });
 
-    await sendFetchGet(
+    sendFetchGet(
         "transactions/balances_sum?positive=false",
         getCookieValue("access"),
         (data) => {
@@ -134,7 +134,7 @@ checkTokens().then(async () => {
         }
     );
 
-    await sendFetchGet(
+    sendFetchGet(
         `transactions/transaction_types?offset=0&limit=100`,
         getCookieValue("access"),
         (data) => {
@@ -179,7 +179,7 @@ checkTokens().then(async () => {
                         if (data.errors.length > 0) {
                             alert(data.errors[0])
                         } else {
-                            if (data.data.pagination.total === 0) {
+                            if (data.data?.pagination?.total === 0 || Object.keys(data.data).length === 0) {
                                 records.classList.remove("active");
                                 noRecords.classList.add("active");
                             } else {
@@ -375,3 +375,4 @@ const createLogicForAddModal = () => {
         }
     })
 }
+

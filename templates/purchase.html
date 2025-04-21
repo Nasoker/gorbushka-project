@@ -76,10 +76,16 @@
         /* <-- Apparently some margin are still there even though it's hidden */
     }
 
-    tbody > tr.checked_client > * {
+    tbody>tr.checked_client>* {
         background-color: rgb(219, 234, 9) !important;
     }
 
+    .left-purchase {
+        display: flex;
+        flex-direction: column;
+        max-width: 150px;
+        gap: 5px;
+    }
 </style>
 
 <body id="page-top">
@@ -132,17 +138,25 @@
                     <div class="card-body border-top">
                         <div class="row">
                             <div class="col-sm-6">
-                                <div>
-                                    <label class="text-muted mb-2 text-xxl-start" for="purchase-date">Закупки за дату:</label>
+                                <div class="left-purchase">
+                                    <label class="text-muted text-xxl-start" for="purchase-date">Закупки за
+                                        дату:</label>
                                     <input type="date" min="2024-06-16" id="purchase-date" name="purchase-date">
-                                    <button class="btn btn-primary text-center add-operation" type="button">Добавить закупку</button>
+                                    <button class="btn btn-primary text-center add-operation" type="button">Добавить
+                                        закупку</button>
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                                <div class="text-sm-end mt-4 mt-sm-0">
+                                <div class="text-end mt-4 mt-sm-0">
                                     <p class="text-muted mb-2">Общая сумма за день: &nbsp;<span class="client_name"
                                             id="total-purchase"></span>
                                     </p>
+                                </div>
+                                <div class="form-check form-switch d-flex justify-content-end">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="switchCheckDefault">
+                                    <label class="form-check-label ms-2" for="switchCheckDefault">Предложенные закупки
+                                        <b id="transaction-requests-count"></b></label>
                                 </div>
                             </div>
                         </div>
@@ -163,397 +177,909 @@
                                                     <tr>
                                                         <th class="text-center">Заказчик</th>
                                                         <th class="text-center">Сумма</th>
+                                                        <th class="text-center requests-title">Подтвердить</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
-                                                    <tr></tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
-                                                    <tr></tr>
+                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
+                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
+                                                    <tr>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
+                                                    <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center"></td>
                                                         <td class="text-center"></td>
+                                                        <td class="text-center">
+                                                            <button type="button"
+                                                                class="btn btn-success">Да</button>
+                                                            <button type="button" class="btn btn-danger">Нет</button>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
