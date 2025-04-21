@@ -492,32 +492,90 @@ const createLogicForAddModal = (id, fetch, role, user_id) => {
             ) {
                 modalActivity(false);
                 addOperationModalInputs[0].style.outline = "none";
+                addOperationModalInputs[1].style.outline = "none";
 
-                sendFetchPostWithAccess(
-                    `transactions/`,
-                    getCookieValue("access"),
-                    {
-                        "transaction_type_id": id,
-                        "amount": -Number(addOperationModalInputs[0].value),
-                        "provider": addOperationModalInputs[1].value,
-                    },
-                    (data) => {
-                        if (data.errors.length > 0) {
-                            alert(data.errors[0])
-                        } else {
-                            day = new Date().toISOString().split('T')[0];
-                            purchaseDate.value = day;
+                if (role === "Admin") {
+                    sendFetchPostWithAccess(
+                        `transactions/`,
+                        getCookieValue("access"),
+                        {
+                            "transaction_type_id": id,
+                            "amount": -Number(addOperationModalInputs[0].value),
+                            "provider": addOperationModalInputs[1].value,
+                        },
+                        (data) => {
+                            if (data.errors.length > 0) {
+                                alert(data.errors[0])
+                            } else {
+                                day = new Date().toISOString().split('T')[0];
+                                purchaseDate.value = day;
 
-                            fetch(
-                                false,
-                                () => {
-                                    closeModal();
-                                    modalActivity(true);
-                                }
-                            )
+                                fetch(
+                                    false,
+                                    () => {
+                                        closeModal();
+                                        modalActivity(true);
+                                    }
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                } else {
+                    // TRANSACTION REQUESTS
+                    sendFetchPostWithAccess(
+                        `transaction_requests/`,
+                        getCookieValue("access"),
+                        {
+                            "transaction_type_id": id,
+                            "amount": -Number(addOperationModalInputs[0].value),
+                            "requester_id": user_id,
+                            "provider": addOperationModalInputs[1].value,
+                        },
+                        (data) => {
+                            if (data.errors.length > 0) {
+                                alert(data.errors[0])
+                            } else {
+                                sendFetchGet(
+                                    `transaction_requests/?status=requested&offset=0&limit=${MAX_LINES}`,
+                                    getCookieValue("access"),
+                                    (data) => {
+                                        if (data.errors.length > 0) {
+                                            alert(data.errors[0])
+                                        } else {
+                                            transactionRequestsSwitch.disabled = data.data.pagination.total === 0;
+                                            transactionRequestsLabel.textContent = `(${data.data.pagination.total})`;
+
+                                            if (transactionRequestsSwitch.checked) {
+                                                const transactions = data.data.items;
+
+                                                records.classList.add("active");
+                                                noRecords.classList.remove("active");
+
+                                                transactionRequestsSwitch.disabled = false;
+                                                transactionRequestsLabel.textContent = `(${data.data.pagination.total})`;
+                                                requestsTitle.style.display = "block";
+
+                                                for (let i = 0; i < MAX_LINES; i++) {
+                                                    if (i > transactions.length - 1) {
+                                                        lines[i].style.display = "none";
+                                                    } else {
+                                                        totalSum += transactions[i].total;
+                                                        lines[i].style.display = "table-row";
+                                                        lines[i].classList.remove("checked_client");
+                                                        changeLine(lines[i], transactions[i], "requests");
+                                                    }
+                                                }
+                                            }
+
+                                            closeModal();
+                                            modalActivity(true);
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    )
+                }
             } else {
                 if (addOperationModalInputs[0].value.replace(/\+\-/g, "").length <= 0) addOperationModalInputs[0].style.outline = "1px solid red";
                 if (addOperationModalInputs[1].value.replace(/\+\-/g, "").length <= 0) addOperationModalInputs[1].style.outline = "1px solid red";
