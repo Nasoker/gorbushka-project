@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'ninja_extra',
     'corsheaders',
     'django_cleanup.apps.CleanupConfig',
+    'rangefilter',
 ]
 
 MIDDLEWARE = [
