@@ -6,6 +6,8 @@ class TransactionFilters(Schema):
     is_income: bool | None = None
     is_current_month: bool | None = None
     is_today: bool | None = None
+    month: int | None = None
+    year: int | None = None
 
 
 class BalancesSumFilters(Schema):

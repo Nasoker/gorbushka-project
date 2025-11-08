@@ -271,12 +271,14 @@ class ORMTransactionsService(BaseTransactionsService):
             else:
                 query &= Q(amount__lt=0)
 
-        if filters.is_current_month:
+        if filters.year and filters.month:
+            query &= Q(created_at__month=filters.month)
+            query &= Q(created_at__year=filters.year)
+        elif filters.is_current_month:
             today = datetime.now()
             query &= Q(created_at__month=today.month)
             query &= Q(created_at__year=today.year)
-
-        if filters.is_today:
+        elif filters.is_today:
             query &= Q(created_at__date=date.today())
 
         return query
