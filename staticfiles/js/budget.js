@@ -37,6 +37,7 @@ checkTokens().then(async () => {
 
     if (sessionStorage.getItem("report_date")) {
         day = sessionStorage.getItem("report_date");
+        sessionStorage.removeItem("report_date");
     } 
 
     const name = document.querySelector("#username");
@@ -169,10 +170,17 @@ checkTokens().then(async () => {
         } else {
             sessionStorage.setItem("transaction_id", JSON.stringify([changedId]));
 
-            responseTotalLink = 
-                `transactions/total?is_current_month=true&types=${changedId}&`;
-            responseTransactionLink = 
-                `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&types=${changedId}&`
+            if (day) {
+                responseTotalLink = 
+                    `transactions/total?month=${day.split('-')[1]}&year=${day.split('-')[0]}&types=${changedId}&`;
+                responseTransactionLink = 
+                    `transactions/?month=${day.split('-')[1]}&year=${day.split('-')[0]}&offset=0&limit=${MAX_LINES}&&types=${changedId}&`
+            } else {
+                responseTotalLink = 
+                    `transactions/total?is_current_month=true&types=${changedId}&`;
+                responseTransactionLink = 
+                    `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&&types=${changedId}&`
+            }
 
             getFilteredTransactions();
         }
