@@ -111,7 +111,18 @@ const fetchPage = (name, curPage, limit, id) => {
             return `transactions/${id}?offset=${(curPage - 1) * limit}&limit=${limit}`;
         case 'transactions_types':
             const ids = JSON.parse(sessionStorage.getItem("transaction_id"));
-            let responseTransactionLink = `transactions/?is_current_month=true&offset=${(curPage - 1) * limit}&limit=${limit}&`
+            const budgetDate = sessionStorage.getItem("budget_date");
+            let responseTransactionLink;
+            
+            if (budgetDate) {
+                // Используем сохраненную дату из budget.js
+                const month = budgetDate.split('-')[1];
+                const year = budgetDate.split('-')[0];
+                responseTransactionLink = `transactions/?month=${month}&year=${year}&offset=${(curPage - 1) * limit}&limit=${limit}&`;
+            } else {
+                // Если дата не сохранена, используем текущий месяц
+                responseTransactionLink = `transactions/?is_current_month=true&offset=${(curPage - 1) * limit}&limit=${limit}&`;
+            }
         
             Array.from(ids).forEach((elem) => {
                 responseTransactionLink += `types=${elem}&`;

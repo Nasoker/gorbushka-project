@@ -173,6 +173,9 @@ checkTokens().then(async () => {
             day = selectedDate;
         }
         
+        // Сохраняем выбранную дату для пагинации
+        sessionStorage.setItem("budget_date", day);
+        
         buildLinks(day, currentFilterIds);
         getFilteredTransactions(false);
     });
