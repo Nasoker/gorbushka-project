@@ -122,6 +122,9 @@ checkTokens().then(async () => {
 
     costsLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Расходы");
+        if (day !== new Date().toISOString().slice(0, 7)) {
+            sessionStorage.setItem("report_date", day);
+        } 
         window.location = `${window.location.origin}/budget`;
     });
 });

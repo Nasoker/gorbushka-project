@@ -29,9 +29,15 @@ const changeLine = (node, value) => {
 }
 
 checkTokens().then(async () => {
+    let day;
+
     if (!sessionStorage.getItem("transaction_type")) {
         history.back();
     }
+
+    if (sessionStorage.getItem("report_date")) {
+        day = sessionStorage.getItem("report_date");
+    } 
 
     const name = document.querySelector("#username");
     const balance = document.querySelector("#balance");
@@ -73,10 +79,19 @@ checkTokens().then(async () => {
         }
     )
 
-    let responseTotalLink = 
-        `transactions/total?is_current_month=true&`;
-    let responseTransactionLink = 
-        `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
+    let responseTotalLink, responseTransactionLink;
+
+    if (day) {
+        responseTotalLink = 
+            `transactions/total?month=${day.split('-')[1]}&year=${day.split('-')[0]}&`;
+        responseTransactionLink = 
+            `transactions/?month=${day.split('-')[1]}&year=${day.split('-')[0]}&offset=0&limit=${MAX_LINES}&`
+    } else {
+        responseTotalLink = 
+            `transactions/total?is_current_month=true&`;
+        responseTransactionLink = 
+            `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
+    }
 
     Array.from(ids).forEach((elem) => {
         responseTotalLink += `types=${elem}&`;
