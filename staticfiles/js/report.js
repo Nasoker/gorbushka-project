@@ -11,16 +11,10 @@ checkTokens().then(async () => {
     const costsLink = document.querySelector("#costs-link")
     const netProfit = document.querySelector("#net-profit");
     const profit = document.querySelector("#profit");
-    let costsSum, profitSum, day;
+    let costsSum, profitSum;
     const transactionTypes = ["Непредвиденные расходы", "Заработная плата", "Доставка", "Парковка", "Аутсорс", "Аренда", "Хоз/Канц Товары", "Грава"]
-    const reportDate = document.querySelector("#report-date");
+    
     const parsedToken = parseJwt(getCookieValue("access"));
-    day = new Date().toISOString().slice(0, 7);
-    const minDate = "2024-06";
-
-    reportDate.min = minDate;
-    reportDate.max = day;
-    reportDate.value = day;
 
     await sendFetchGet(
         `users/${parsedToken.user_id}`,
@@ -46,85 +40,65 @@ checkTokens().then(async () => {
         }
     )
 
-    const getReport = (month, year) => {
-        sendFetchGet(
-            `transactions/transaction_types?offset=0&limit=100`,
-            getCookieValue("access"),
-            (data) => {
-                if (data.errors.length > 0) {
-                    alert(data.errors[0])
-                } else {
-                    let typesArr = [];
-                    let transactionLink = "transactions/total?";
-    
-                    transactionTypes.forEach((type) => {
-                        data.data.items.forEach((typeObj) => {
-                            if(type === typeObj.type){
-                                typesArr.push(typeObj.id)
-                                transactionLink += `types=${typeObj.id}&`
-                            }
-                        })
-                    });
-                    transactionLink+=`month=${month}&year=${year}`
-    
-                    sessionStorage.setItem("transaction_id", JSON.stringify(typesArr));
-                    sessionStorage.setItem("transaction_names", JSON.stringify(transactionTypes));
-    
-                    sendFetchGet(
-                        transactionLink,
-                        getCookieValue("access"),
-                        (data) => {
-                            if (data.errors.length > 0) {
-                                alert(data.errors[0])
-                            } else { 
-                                costsSum = data.data.total;
-    
-                                sendFetchGet(
-                                    "finances/",
-                                    getCookieValue("access"),
-                                    (data) => {
-                                        if (data.errors.length > 0) {
-                                            alert(data.errors[0])
-                                        } else {
-                                            profitSum = data.data.income_amount;
-                                            profit.textContent = change(profitSum);
-                                            costs.textContent = change(costsSum);
-    
-                                            netProfit.textContent = change(profitSum - Math.abs(costsSum));
-                                            
-                                            plugActivity(false);
-                                            isMobile && checkMobile();
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-        )
-    }
-    getReport(day.split('-')[1], day.split('-')[0]);
+    sendFetchGet(
+        `transactions/transaction_types?offset=0&limit=100`,
+        getCookieValue("access"),
+        (data) => {
+            if (data.errors.length > 0) {
+                alert(data.errors[0])
+            } else {
+                let typesArr = [];
+                let transactionLink = "transactions/total?";
 
-    reportDate.addEventListener("change", () => {
-        const selectedDate = reportDate.value;
-        const currentDate = new Date().toISOString().slice(0, 7);
-        
-        if (selectedDate.length === 0 || selectedDate < minDate || selectedDate > currentDate) {
-            reportDate.value = currentDate;
-            day = currentDate;
-            getReport(day.split('-')[1], day.split('-')[0]);
-        } else {
-            day = selectedDate;
-            getReport(day.split('-')[1], day.split('-')[0]);
+                transactionTypes.forEach((type) => {
+                    data.data.items.forEach((typeObj) => {
+                        if(type === typeObj.type){
+                            typesArr.push(typeObj.id)
+                            transactionLink += `types=${typeObj.id}&`
+                        }
+                    })
+                });
+                transactionLink+="is_today=true"
+
+                sessionStorage.setItem("transaction_id", JSON.stringify(typesArr));
+                sessionStorage.setItem("transaction_names", JSON.stringify(transactionTypes));
+
+                sendFetchGet(
+                    transactionLink,
+                    getCookieValue("access"),
+                    (data) => {
+                        if (data.errors.length > 0) {
+                            alert(data.errors[0])
+                        } else { 
+                            costsSum = data.data.total;
+
+                            sendFetchGet(
+                                "finances/",
+                                getCookieValue("access"),
+                                (data) => {
+                                    if (data.errors.length > 0) {
+                                        alert(data.errors[0])
+                                    } else {
+                                        profitSum = data.data.income_amount;
+                                        profit.textContent = change(profitSum);
+                                        costs.textContent = change(costsSum);
+
+                                        netProfit.textContent = change(profitSum - Math.abs(costsSum));
+                                        
+                                        plugActivity(false);
+                                        isMobile && checkMobile();
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+            }
         }
-    });
+    )
 
     costsLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Расходы");
-        if (day !== new Date().toISOString().slice(0, 7)) {
-            sessionStorage.setItem("report_date", day);
-        } 
         window.location = `${window.location.origin}/budget`;
     });
 });

@@ -35,21 +35,24 @@ checkTokens().then(async () => {
         history.back();
     }
 
-    if (sessionStorage.getItem("report_date")) {
-        day = sessionStorage.getItem("report_date");
-        sessionStorage.removeItem("report_date");
-    } 
-
     const name = document.querySelector("#username");
     const balance = document.querySelector("#balance");
     const balanceTitle = document.querySelector("#template-title");
     const lines = document.querySelectorAll("tbody > tr")
     const records = document.querySelector("#records");
     const noRecords = document.querySelector("#no-records");
+    const reportDate = document.querySelector("#report-date");
     const filter = document.querySelector("#filter");
     const MAX_LINES = 10;
     const ids = JSON.parse(sessionStorage.getItem("transaction_id"));
     const filterNames = JSON.parse(sessionStorage.getItem("transaction_names"));
+    const minDate = "2024-06";
+
+    day = new Date().toISOString().slice(0, 7);
+
+    reportDate.min = minDate;
+    reportDate.max = day;
+    reportDate.value = day;
     
     filterNames.forEach((elem, i) => {
         const select = document.createElement("option");
@@ -81,23 +84,28 @@ checkTokens().then(async () => {
     )
 
     let responseTotalLink, responseTransactionLink;
+    let currentFilterIds = ids;
 
-    if (day) {
-        responseTotalLink = 
-            `transactions/total?month=${day.split('-')[1]}&year=${day.split('-')[0]}&`;
-        responseTransactionLink = 
-            `transactions/?month=${day.split('-')[1]}&year=${day.split('-')[0]}&offset=0&limit=${MAX_LINES}&`
-    } else {
-        responseTotalLink = 
-            `transactions/total?is_current_month=true&`;
-        responseTransactionLink = 
-            `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
+    const buildLinks = (selectedDay, filterIds) => {
+        if (selectedDay) {
+            responseTotalLink = 
+                `transactions/total?month=${selectedDay.split('-')[1]}&year=${selectedDay.split('-')[0]}&`;
+            responseTransactionLink = 
+                `transactions/?month=${selectedDay.split('-')[1]}&year=${selectedDay.split('-')[0]}&offset=0&limit=${MAX_LINES}&`
+        } else {
+            responseTotalLink = 
+                `transactions/total?is_current_month=true&`;
+            responseTransactionLink = 
+                `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&`
+        }
+
+        Array.from(filterIds).forEach((elem) => {
+            responseTotalLink += `types=${elem}&`;
+            responseTransactionLink += `types=${elem}&`;
+        });
     }
 
-    Array.from(ids).forEach((elem) => {
-        responseTotalLink += `types=${elem}&`;
-        responseTransactionLink += `types=${elem}&`;
-    });
+    buildLinks(day, currentFilterIds);
 
     const getFilteredTransactions = (isFirst) => {
         sendFetchGet(
@@ -154,35 +162,33 @@ checkTokens().then(async () => {
     
     getFilteredTransactions(true);
 
+    reportDate.addEventListener("change", () => {
+        const selectedDate = reportDate.value;
+        const currentDate = new Date().toISOString().slice(0, 7);
+        
+        if (selectedDate.length === 0 || selectedDate < minDate || selectedDate > currentDate) {
+            reportDate.value = currentDate;
+            day = currentDate;
+        } else {
+            day = selectedDate;
+        }
+        
+        buildLinks(day, currentFilterIds);
+        getFilteredTransactions(false);
+    });
+
     filter.addEventListener("change", (e) => {
         const changedId = filter.options[ filter.selectedIndex ].id;
 
         if(changedId === "all") {
             sessionStorage.setItem("transaction_id", JSON.stringify(ids));
-
-            Array.from(ids).forEach((elem) => {
-                responseTotalLink += `types=${elem}&`;
-                responseTransactionLink += `types=${elem}&`;
-            });
-
-            getFilteredTransactions();
-
+            currentFilterIds = ids;
         } else {
             sessionStorage.setItem("transaction_id", JSON.stringify([changedId]));
-
-            if (day) {
-                responseTotalLink = 
-                    `transactions/total?month=${day.split('-')[1]}&year=${day.split('-')[0]}&types=${changedId}&`;
-                responseTransactionLink = 
-                    `transactions/?month=${day.split('-')[1]}&year=${day.split('-')[0]}&offset=0&limit=${MAX_LINES}&&types=${changedId}&`
-            } else {
-                responseTotalLink = 
-                    `transactions/total?is_current_month=true&types=${changedId}&`;
-                responseTransactionLink = 
-                    `transactions/?is_current_month=true&offset=0&limit=${MAX_LINES}&&types=${changedId}&`
-            }
-
-            getFilteredTransactions();
+            currentFilterIds = [changedId];
         }
+
+        buildLinks(day, currentFilterIds);
+        getFilteredTransactions(false);
     })
 });

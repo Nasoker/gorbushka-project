@@ -125,15 +125,14 @@
                 </nav>
                 <div class="card" style="padding-left: 1.5rem;padding-right: 1.5rem;">
                     <div class="card-body border-top">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div>
-                                    <p class="text-muted mb-2" id="template-title"></p>
-                                    <h5 class="text-success fw-bold" id="balance"></h5>
-                                </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="d-flex flex-column">
+                                <p class="text-muted mb-1" id="template-title"></p>
+                                <h5 class="text-success fw-bold mb-0" id="balance"></h5>
                             </div>
-                            <div class="col-sm-6">
-                                <select class="form-select h-100" id="filter">
+                            <div class="d-flex gap-3 ms-auto mt-1">
+                                <input type="month" min="2024-06-16" id="report-date" class="form-control">
+                                <select class="form-select" id="filter">
                                     <option id="all" selected>Без фильтров</option>
                                 </select>
                             </div>
