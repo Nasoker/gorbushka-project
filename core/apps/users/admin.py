@@ -8,7 +8,7 @@ from .models import User
 @admin.register(User)
 class UserAdmin(UserAdmin):
     fieldsets = (
-        ('Личные данные', {'fields': ('email', 'first_name', 'last_name', 'phone', 'telegram')}),
+        ('Личные данные', {'fields': ('mphone_id', 'email', 'first_name', 'last_name', 'phone', 'telegram')}),
         ('Права пользователя', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
         ('Информация о сотруднике', {'fields': ('salary',)}),
         ('Аутентификация', {'fields': ('username', 'password')}),
@@ -18,7 +18,7 @@ class UserAdmin(UserAdmin):
     readonly_fields = ('last_login', 'date_joined')
 
     add_fieldsets = (
-        ('Личные данные', {'fields': ('email', 'first_name', 'last_name', 'phone', 'telegram')}),
+        ('Личные данные', {'fields': ('mphone_id', 'email', 'first_name', 'last_name', 'phone', 'telegram')}),
         (
             'Аутентификация', {
                 'classes': ('wide',),
@@ -30,6 +30,7 @@ class UserAdmin(UserAdmin):
 
     list_display = (
         'id',
+        'mphone_id',
         'username',
         'email',
         'first_name',

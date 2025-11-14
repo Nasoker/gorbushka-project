@@ -56,6 +56,14 @@ class User(AbstractUser):
         verbose_name='Зарплата сотрудника',
     )
 
+    mphone_id = models.CharField(
+        max_length=255,
+        verbose_name='mphone id',
+        null=True,
+        blank=True,
+        unique=True,
+    )
+
     def __str__(self):
         if not self.last_name:
             return f'{self.first_name} ({self.email})'

@@ -152,4 +152,7 @@ class ORMUsersService(BaseUsersService):
             else:
                 query &= (Q(balance__gte=0) | Q(balance=None))
 
+        if filters.mphone_id is not None:
+            query &= Q(mphone_id=filters.mphone_id)
+
         return query

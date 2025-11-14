@@ -7,3 +7,4 @@ class UserFilters(Schema):
 
 class CustomerFilters(UserFilters):
     is_debtor: bool | None = None
+    mphone_id: str | None = None
