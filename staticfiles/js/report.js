@@ -13,7 +13,7 @@ checkTokens().then(async () => {
     const profit = document.querySelector("#profit");
     let costsSum, profitSum;
     const transactionTypes = ["Непредвиденные расходы", "Заработная плата", "Доставка", "Парковка", "Аутсорс", "Аренда", "Хоз/Канц Товары", "Грава"]
-    
+    const exportMphone = document.querySelector("#export-mphone");
     const parsedToken = parseJwt(getCookieValue("access"));
 
     await sendFetchGet(
@@ -95,7 +95,7 @@ checkTokens().then(async () => {
                 )
             }
         }
-    )
+    );
 
     costsLink.addEventListener("click", () => {
         sessionStorage.setItem("transaction_type", "Расходы");
@@ -109,6 +109,7 @@ const createLogicForChangeModal = () => {
     const changeModalInput = changeModal.querySelector(".modal-input-text");
     const changeModalBtns = changeModal.querySelectorAll("button");
     const changeModalTitle = changeModal.querySelector(".modal-title");
+    const exportMphone = document.querySelector("#export-mphone");
     const profit = document.querySelector("#profit-link");
 
     const modalActivity = (state) => {
@@ -185,4 +186,33 @@ const createLogicForChangeModal = () => {
             }
         })
     })
+
+    
+    exportMphone.addEventListener("click", () => {
+        exportMphone.disabled = true;
+        exportMphone.style.opacity = 0.5;
+        fetch(`https://mphone.su/api/ListSales`, {
+            method: "POST",
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer 89C0FE35-EAFE-54BE-8012-D2E0CAE0BB20`,
+            },
+            body: JSON.stringify({
+                "login": "mph52",
+                "pass": "wb2R52+VaE"
+            })
+        })
+        .then(res => res.json())
+        .then(responseJson => {
+            console.log("MPhone ответ:", responseJson);
+        })
+        .catch(error => {
+            console.error("Ошибка запроса MPhone:", error);
+        })
+        .finally(() => {
+            exportMphone.disabled = false;
+            exportMphone.style.opacity = 1;
+        });
+    });
 }
